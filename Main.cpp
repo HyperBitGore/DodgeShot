@@ -2,13 +2,12 @@
 #undef main
 Gore gore;
 Game game;
-
+int level = 1;
 
 
 
 //Background system
 //Destroy certain part of enemy to kill them
-//Fast bullets, less bullets
 //Grazing system
 //Enemies on bottom 4th of screen won't shoot
 //Level loading system
@@ -45,7 +44,9 @@ int main() {
 
 	spxp enem1head = gore.loadSpriteList({ "enem1_3.png", "enem1_2.png", "enem1_1.png" }, { 30, 30, 30 }, {50, 50, 50},
 	SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+	SDL_Texture* backtex = game.loadBackground(level, rend);
 	Entity player = { 400, 400, 30, 30 };
+	Entity back = { 0, -200, 800, 800 };
 	std::vector<Bullet> bullets;
 	std::vector<Enemy> enemies;
 	double delta;
@@ -178,6 +179,7 @@ int main() {
 		}
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
 		SDL_RenderClear(rend);
+		game.updateBackground(rend, backtex, &back, delta);
 		for (auto& i : enemies) {
 			gore.clearSurface(i.surf);
 			i.shootimer += delta;

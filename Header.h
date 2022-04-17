@@ -4,11 +4,6 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 
-struct Point {
-	int x;
-	int y;
-	bool destroyed;
-};
 
 
 struct Entity {
@@ -35,9 +30,6 @@ struct Enemy : Entity {
 	int type;
 	spxp sprites;
 	spxp start;
-	//Pointer to start of array I will aloc on enemy creation
-	int *p;
-	int size;
 	//Real
 	std::vector<std::vector<bool>> points;
 	SDL_Surface* surf;
@@ -56,6 +48,6 @@ public:
 		}
 		return false;
 	}
-
-
+	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
+	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
 };
