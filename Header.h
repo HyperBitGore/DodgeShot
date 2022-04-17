@@ -7,6 +7,7 @@
 struct Point {
 	int x;
 	int y;
+	bool destroyed;
 };
 
 
@@ -37,8 +38,9 @@ struct Enemy : Entity {
 	//Pointer to start of array I will aloc on enemy creation
 	int *p;
 	int size;
-	//Could do a an array but would have to memalloc it to size of sprite image
-	std::vector<Point> destroyed;
+	//Real
+	std::vector<std::vector<bool>> points;
+	SDL_Surface* surf;
 };
 
 

@@ -6,8 +6,8 @@ Game game;
 
 
 
-
-//Basic enemy pixel destruction, destroy certain part of enemy to kill them
+//Background system
+//Destroy certain part of enemy to kill them
 //Fast bullets, less bullets
 //Grazing system
 //Enemies on bottom 4th of screen won't shoot
@@ -48,7 +48,6 @@ int main() {
 	Entity player = { 400, 400, 30, 30 };
 	std::vector<Bullet> bullets;
 	std::vector<Enemy> enemies;
-
 	double delta;
 	double uptimer = 0;
 	double downtimer = 0;
@@ -74,13 +73,14 @@ int main() {
 	temp.animtimer = 0;
 	temp.type = 0;
 	temp.start = temp.sprites;
-	temp.size = (temp.w * temp.h) * 3;
+	temp.surf = SDL_CreateRGBSurfaceWithFormat(0, temp.w, temp.h, 32, SDL_PIXELFORMAT_RGBA8888);
+	/*temp.size = (temp.w * temp.h) * 3;
 	temp.p = (int*)std::malloc(((temp.w * temp.h) * 4) * 3);
 	int cb = 0;
 	int x = 0;
 	int y = 0;
 	int* cp = temp.p;
-	for (int i = 0; i < temp.size; i++) {
+	for (int i = 0; i <= temp.size; i++) {
 		switch (cb) {
 		case 0:
 			*cp = x;
@@ -105,9 +105,22 @@ int main() {
 			cb = 0;
 		}
 		cp++;
+	}*/
+	for (int i = 0; i < temp.h; i++) {
+		std::vector<bool> c;
+		for (int j = 0; j < temp.w; j++) {
+			Uint32 col = gore.GetPixelSurface(temp.sprites->current, &i, &j);
+			if (col > 255) {
+				c.push_back(false);
+			}
+			else {
+				c.push_back(true);
+			}
+		}
+		temp.points.push_back(c);
 	}
 	enemies.push_back(temp);
-
+	std::cout << gore.ConvertColorToUint32({ 0, 0, 0, 255 }, surf->format) << std::endl;
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -127,7 +140,6 @@ int main() {
 		int fps = 1 / delta;
 		std::string fp = "Dodge Shot - FPS: " + std::to_string(fps);
 		SDL_SetWindowTitle(wind, fp.c_str());
-		gore.clearSurface(surf);
 		if (togtimer > 0.2) {
 			if (keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) {
 				run = !run;
@@ -160,18 +172,19 @@ int main() {
 		}
 		if (shootimer > 0.1) {
 			if (keys[SDL_SCANCODE_Z]) {
-				bullets.push_back(game.createBullet(player.x + 15, player.y + 15, 5, 5, 270, 0.07, 1));
+				bullets.push_back(game.createBullet(player.x + 15, player.y + 15, 5, 5, 270, 0.001 , 1));
 				shootimer = 0;
 			}
 		}
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
 		SDL_RenderClear(rend);
 		for (auto& i : enemies) {
+			gore.clearSurface(i.surf);
 			i.shootimer += delta;
 			i.movetimer += delta;
 			i.animtimer += delta;
 			if (i.shootimer > i.shootmax) {
-				bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 90, 0.3, 0));
+				bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 90, 0.002, 0));
 				i.shootimer = 0;
 			}
 			if (i.animtimer > i.animmax) {
@@ -183,32 +196,17 @@ int main() {
 			}
 			for (int h = 0; h < i.h; h++) {
 				for (int w = 0; w < i.w; w++) {
-					bool skip = false;
-					//Would be easier with an array mapped to image size and then just grabbing if that point is destroyed
-					for (auto& k : i.destroyed) {
-						if (k.x == w && k.y == h) {
-							skip = true;
-							break;
+						if (!i.points[h][w]) {
+							Uint32 col = gore.GetPixelSurface(i.sprites->current, &h, &w);
+							gore.SetPixelSurface(i.surf, &h, &w, &col);
 						}
-					}
-					if (!skip) {
-						int x = i.x + w;
-						int y = i.y + h;
-						Uint32 col = gore.GetPixelSurface(i.sprites->current, &h, &w);
-						gore.SetPixelSurface(surf, &y, &x, &col);
-					}
 				}
 			}
-
-			//SDL_Rect rect = { i.x, i.y, i.w, i.h };
-			//SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, i.sprites->current);
-			//SDL_RenderCopy(rend, tex, NULL, &rect);
-			//SDL_DestroyTexture(tex);
+			SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, i.surf);
+			SDL_Rect rect = { i.x, i.y, i.w, i.h };
+			SDL_RenderCopy(rend, tex, NULL, &rect);
+			SDL_DestroyTexture(tex);
 		}
-		SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surf);
-		SDL_Rect screct = { 0, 0, 800, 800 };
-		SDL_RenderCopy(rend, tex, NULL, &screct);
-		SDL_DestroyTexture(tex);
 		int n = 0;
 		for (auto& i : bullets) {
 			i.trajtimer += delta;
@@ -228,17 +226,16 @@ int main() {
 				//Check collision with enemy and delete pixel it's colliding with
 				for (auto& j : enemies) {
 					if (game.isColliding(i, j)) {
-						//Find pixel it's hitting
-						for (int h = 0; h < j.h; h++) {
-							for (int w = 0; w < j.w; w++) {
-								if (i.x == j.x + w && i.y == j.y + h) {
-									Point p = { j.x + w, j.y + h };
-									j.destroyed.push_back(p);
-									break;
-								}
-							}
+						int cx = 0;
+						int cy = 0;
+						if (i.x > j.x) { cx = i.x - j.x; }
+						else { cx = j.x - i.x; }
+						if (i.y > j.y) { cy = i.y - j.y; }
+						else { cy = j.y - i.y; }
+						if (!j.points[cy][cx]) {
+							j.points[cy][cx] = true;
+							i.x = -30;
 						}
-						i.x = -30;
 					}
 				}
 				break;

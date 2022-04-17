@@ -3,13 +3,13 @@
 
 float Game::trajX(float deg) {
 	deg = cos(deg * M_PI / 180);
-	deg = deg * 180.0 / M_PI;
+	deg = deg;
 	return deg;
 }
 
 float Game::trajY(float deg) {
 	deg = sin(deg * M_PI / 180);
-	deg = deg * 180.0 / M_PI;
+	deg = deg;
 	return deg;
 }
 
