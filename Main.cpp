@@ -4,13 +4,16 @@ Gore gore;
 Game game;
 int level = 1;
 int score = 0;
+int curnload = 0;
+int curetype = 0;
+spxp enem1head;
 
-
-
-//Level that will move and change around you
-//Level loading system
 //Enemy destruction particle system
-//6 basic enemies(less if deem to much time)
+//Blood and health system
+//Spread enemy spawning over multiple frames
+//Add enemy movement; From side of screen, scrolling down, sitting in place, come in fast from top for period then settle
+//Level that will move and change around you(set of transforms that will be activated based on current time of level)
+//6 basic enemies(less if deem too much time)
 //5 levels(5 bosses) like classic STG shmups
 //Enemy that grows pixels back
 //Basic cannon fodder flier
@@ -23,6 +26,14 @@ int score = 0;
 //Third: Small guy like you and dodges your attacks and sounds out hard to dodge patterns or tracking ones
 //Fourth: Tentacles from giant mass on top of screen(maybe stage is boss fight like R type level or mushi level)
 //Fifth: Two bosses at once
+
+std::vector<int> etypes = { 0, 0, 0, 0, 0, 0, 0, 0,
+							0, 0, 0, 0, 0, 0, 0, 0 };
+std::vector<int> nload = { 8, 8};
+std::vector<Point> spawnloc = { {20, 10}, {40, 10}, {60, 10}, {80, 10}, {120, 10}, {150, 10}, {300, 10}, {400, 10},
+								{20, 10}, {40, 10}, {60, 10}, {80, 10}, {120, 10}, {150, 10}, {300, 10}, {400, 10}};
+
+
 int main() {
 	bool exitf = false;
 	if (!SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -44,8 +55,10 @@ int main() {
 	texp text16 = NULL;
 	game.constructAlphabet(rend, font16, { 198, 150, 40 }, text16);
 
+	//game.convertToLvl(etypes, nload, spawnloc, "level.lvl");
+	game.loadLevel(etypes, nload, spawnloc, "level.lvl");
 
-	spxp enem1head = gore.loadSpriteList({ "enem1_3.png", "enem1_2.png", "enem1_1.png" }, { 30, 30, 30 }, {50, 50, 50},
+	enem1head = gore.loadSpriteList({ "enem1_3.png", "enem1_2.png", "enem1_1.png" }, { 30, 30, 30 }, {50, 50, 50},
 	SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 	texp gr = gore.loadTextureList({ "graze4.png", "graze3.png", "graze2.png", "graze1.png" }, { 60, 60, 60, 60 }, { 60, 60, 60, 60 }
 	, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
@@ -68,15 +81,15 @@ int main() {
 	double shootimer = 0;
 	double grtimer = 0;
 	double grstimer = 0;
+	double spawntimer = 0;
 
 	bool run = false;
 	bool cgr = false;
-
-	game.createEnemy(enem1head, enemies, 300, 100, 30, 50, 0, rend);
-	game.createEnemy(enem1head, enemies, 200, 100, 30, 50, 0, rend);
-	game.createEnemy(enem1head, enemies, 250, 100, 30, 50, 0, rend);
-	game.createEnemy(enem1head, enemies, 350, 100, 30, 50, 0, rend);
-	game.createEnemy(enem1head, enemies, 400, 100, 30, 50, 0, rend);
+	game.createEnemy(enem1head, enemies, 300, 100, 0, rend);
+	game.createEnemy(enem1head, enemies, 200, 100, 0, rend);
+	game.createEnemy(enem1head, enemies, 250, 100, 0, rend);
+	game.createEnemy(enem1head, enemies, 350, 100, 0, rend);
+	game.createEnemy(enem1head, enemies, 400, 100, 0, rend);
 	std::cout << gore.ConvertColorToUint32({ 0, 0, 0, 255 }, surf->format) << std::endl;
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
@@ -91,9 +104,15 @@ int main() {
 		downtimer += delta;
 		togtimer += delta;
 		shootimer += delta;
+		spawntimer += delta;
 
-		upmax = 0.004;
-		downmax = 0.004;
+		if (spawntimer > 1.5) {
+			game.levelHandler(etypes, nload, spawnloc, enemies, rend);
+			spawntimer = 0;
+		}
+
+		upmax = 0.005;
+		downmax = 0.007;
 		int fps = 1 / delta;
 		std::string fp = "Dodge Shot - FPS: " + std::to_string(fps);
 		SDL_SetWindowTitle(wind, fp.c_str());
@@ -129,9 +148,22 @@ int main() {
 		}
 		if (shootimer > 0.1) {
 			if (keys[SDL_SCANCODE_Z]) {
-				bullets.push_back(game.createBullet(player.x + 15, player.y + 15, 5, 5, 270, 0.001 , 1));
-				bullets.push_back(game.createBullet(player.x + 16, player.y + 15, 5, 5, 270, 0.001, 1));
-				bullets.push_back(game.createBullet(player.x + 14, player.y + 15, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 8, player.y + 10, 5, 5, 270, 0.001 , 1));
+				bullets.push_back(game.createBullet(player.x + 9, player.y + 10, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 7, player.y + 10, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 6, player.y + 10, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 10, player.y + 10, 5, 5, 270, 0.001, 1));	
+				bullets.push_back(game.createBullet(player.x + 8, player.y + 5, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 9, player.y + 5, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 7, player.y + 5, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 6, player.y + 5, 5, 5, 270, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 10, player.y + 5, 5, 5, 270, 0.001, 1));
+
+				bullets.push_back(game.createBullet(player.x + 8, player.y + 5, 5, 5, 250, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 9, player.y + 5, 5, 5, 290, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 7, player.y + 5, 5, 5, 250, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 6, player.y + 5, 5, 5, 250, 0.001, 1));
+				bullets.push_back(game.createBullet(player.x + 10, player.y + 5, 5, 5, 290, 0.001, 1));
 				shootimer = 0;
 			}
 		}

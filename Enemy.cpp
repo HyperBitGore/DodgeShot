@@ -2,13 +2,11 @@
 
 
 
-void Game::createEnemy(spxp& enemhead, std::vector<Enemy>& enemies, int x, int y, int w, int h, int type, SDL_Renderer* rend) {
+void Game::createEnemy(spxp& enemhead, std::vector<Enemy>& enemies, int x, int y, int type, SDL_Renderer* rend) {
 	Gore gore;
 	Enemy temp;
 	temp.x = x;
 	temp.y = y;
-	temp.w = w;
-	temp.h = h;
 	temp.sprites = enemhead;
 	temp.change = true;
 	temp.movetimer = 0;
@@ -23,7 +21,9 @@ void Game::createEnemy(spxp& enemhead, std::vector<Enemy>& enemies, int x, int y
 		temp.timermax = 0.1;
 		temp.animmax = 0.3;
 		temp.destroycheck = { {13, 30}, {14, 30}, {15, 30}, {16, 30}, {13, 31}, {14, 31}, {15, 31}, {16, 31}, {14, 32}, {15, 32} };
-		temp.destn = 10;
+		temp.destn = 5;
+		temp.w = 30;
+		temp.h = 50;
 		break;
 	}
 	temp.type = type;
