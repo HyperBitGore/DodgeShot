@@ -5,6 +5,10 @@
 #include <SDL_mixer.h>
 
 
+struct Point {
+	int x;
+	int y;
+};
 
 struct Entity {
 	float x;
@@ -33,6 +37,10 @@ struct Enemy : Entity {
 	//Real
 	std::vector<std::vector<bool>> points;
 	SDL_Surface* surf;
+	SDL_Texture* tex;
+	bool change;
+	std::vector<Point> destroycheck;
+	int destn;
 };
 
 
@@ -48,6 +56,24 @@ public:
 		}
 		return false;
 	}
+	void constructAlphabet(SDL_Renderer* rend, TTF_Font* font, SDL_Color color, texp& head) {
+		Gore gore;
+		for (int i = 33; i < 123; i++) {
+			char c = i;
+			std::string co;
+			co.push_back(c);
+			SDL_Surface* surf = TTF_RenderText_Solid(font, co.c_str(), color);
+			SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, surf);
+			SDL_FreeSurface(surf);
+			gore.insertTex(head, tex, co);
+			//std::cout << co << std::endl;
+		}
+	}
+
 	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
 	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
+	
+	void createEnemy(spxp& enemhead, std::vector<Enemy>& enemies, int x, int y, int w, int h, int type, SDL_Renderer* rend);
+
+	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc);
 };

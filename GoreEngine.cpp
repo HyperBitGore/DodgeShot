@@ -75,7 +75,12 @@ void Gore::clearSurface(SDL_Surface* surf) {
 	memset(surf->pixels, 0, (surf->w * surf->h) * (sizeof(surf->pixels)));
 	SDL_UnlockSurface(surf);
 }
-
+void Gore::clearTexture(SDL_Texture* tex, int* pitch, int w, int h) {
+	Uint32* pixels;
+	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
+	memset(pixels, 0, (w * h) * (sizeof(pixels)));
+	SDL_UnlockTexture(tex);
+}
 //Texture has to be made with SDL_TEXTUREACCESS_STREAMING flag
 void Gore::SetPixelTexture(SDL_Texture* tex, int* y, int* x, Uint32* pixel, int* pitch) {
 	Uint32* pixels;

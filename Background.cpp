@@ -29,7 +29,9 @@ SDL_Texture* Game::loadBackground(int level, SDL_Renderer* rend) {
 
 
 void Game::updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta) {
-	back->y += 30 * delta;
+	if (back->y < 0) {
+		back->y += 30 * delta;
+	}
 	SDL_Rect rect = { back->x, back->y, back->w, back->h };
 	SDL_RenderCopy(rend, ctex, NULL, &rect);
 }

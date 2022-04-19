@@ -35,6 +35,7 @@ public:
 	void SetPixelSurfaceColor(SDL_Surface* surf, int* y, int* x, SDL_Color* color);
 	Uint32 ConvertColorToUint32(SDL_Color color, SDL_PixelFormat* format);
 	void clearSurface(SDL_Surface* surf);
+	void clearTexture(SDL_Texture* tex, int* pitch, int w, int h);
 	void SetPixelTexture(SDL_Texture* tex, int* y, int* x, Uint32* pixel, int* pitch);
 	Uint32 GetPixelTexture(SDL_Texture* tex, int* y, int* x, int* w, int* pitch);
 	SDL_Surface* loadPNG(std::string name, SDL_PixelFormatEnum format, int w, int h);
