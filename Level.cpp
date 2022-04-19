@@ -1,12 +1,33 @@
 #include "Header.h"
 
 
-void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend) {
-	if (curnload < nload.size() - 1) {
-		for (int i = 0; i < nload[curnload]; i++, curetype++) {
-			createEnemy(enem1head, enemies, spawnloc[curetype].x, spawnloc[curetype].y, etypes[curetype], rend);
+void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning) {
+	if (curnload <= nload.size() - 1) {
+		bool oneframe = false;
+		for (int i = prog; i < nload[curnload]; i++, curetype++, oneframe = true) {
+			if (oneframe) {
+				prog = i;
+				return;
+			}
+			spxp sp = NULL;
+			texp tp = NULL;
+			switch (etypes[curetype]) {
+			case 0:
+				sp = enem1head;
+				tp = enem1tex;
+				break;
+			case 1:
+
+				break;
+			}
+			createEnemy(sp, tp, enemies, spawnloc[curetype].x, spawnloc[curetype].y, etypes[curetype], rend);
 		}
 		curnload++;
+		prog = 0;
+		*spawning = false;
+	}
+	else {
+		*spawning = false;
 	}
 }
 

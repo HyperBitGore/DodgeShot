@@ -6,8 +6,9 @@
 
 extern int curnload;
 extern int curetype;
+extern int prog;
 extern spxp enem1head;
-
+extern texp enem1tex;
 struct Point {
 	int x;
 	int y;
@@ -37,6 +38,8 @@ struct Enemy : Entity {
 	int type;
 	spxp sprites;
 	spxp start;
+	texp texs;
+	texp tstart;
 	//Real
 	std::vector<std::vector<bool>> points;
 	SDL_Surface* surf;
@@ -45,6 +48,13 @@ struct Enemy : Entity {
 	std::vector<Point> destroycheck;
 	int destn;
 };
+struct Particle : Bullet {
+	SDL_Rect pd;
+	SDL_Rect rect;
+	SDL_Texture* tex;
+	bool er;
+};
+
 struct Transform : Entity {
 	float endx;
 	float endy;
@@ -80,9 +90,9 @@ public:
 	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
 	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
 	
-	void createEnemy(spxp& enemhead, std::vector<Enemy>& enemies, int x, int y, int type, SDL_Renderer* rend);
+	void createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemies, int x, int y, int type, SDL_Renderer* rend);
 
 	void convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file);
 	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file);
-	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend);
+	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool* spawning);
 };
