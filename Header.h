@@ -3,6 +3,7 @@
 #include "GoreEngine.h"
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
+#include <chrono>
 
 extern int curnload;
 extern int curetype;
@@ -47,6 +48,12 @@ struct Enemy : Entity {
 	bool change;
 	std::vector<Point> destroycheck;
 	int destn;
+	float trajx;
+	float trajy;
+	//0 - neg x; 1 - pos x; 2 - neg y;
+	int offscreen;
+	float tgx;
+	bool pause;
 };
 struct Particle : Bullet {
 	SDL_Rect pd;
@@ -55,10 +62,16 @@ struct Particle : Bullet {
 	bool er;
 };
 
-struct Transform : Entity {
-	float endx;
-	float endy;
+struct Transform {
+	int sx;
+	int sy;
+	int endx;
+	int endy;
+	int cx;
+	int cy;
 	double activate;
+	double speed;
+	float ct;
 };
 
 
@@ -90,9 +103,28 @@ public:
 	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
 	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
 	
-	void createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemies, int x, int y, int type, SDL_Renderer* rend);
+	void createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemies, int x, int y, int type, float degree, SDL_Renderer* rend);
 
-	void convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file);
-	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file);
+	void convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
+	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
 	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool* spawning);
+	void MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
+};
+
+class Timer {
+private:
+	std::chrono::time_point<std::chrono::steady_clock> start;
+	std::chrono::time_point<std::chrono::steady_clock> end;
+public:
+	void startTime() {
+		start = std::chrono::steady_clock::now();
+	}
+	double getTime() {
+		end = std::chrono::steady_clock::now();
+		return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	}
+	void resetTime() {
+		start = std::chrono::steady_clock::now();
+		end = std::chrono::steady_clock::now();
+	}
 };

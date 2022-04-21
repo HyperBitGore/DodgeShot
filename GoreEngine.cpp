@@ -82,17 +82,19 @@ void Gore::clearTexture(SDL_Texture* tex, int* pitch, int w, int h) {
 	SDL_UnlockTexture(tex);
 }
 //Texture has to be made with SDL_TEXTUREACCESS_STREAMING flag
+//Have to divide the pitch by sizeof(unsigned int) to get proper x and y 
 void Gore::SetPixelTexture(SDL_Texture* tex, int* y, int* x, Uint32* pixel, int* pitch) {
 	Uint32* pixels;
 	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
-	pixels[(*y * (*pitch)) + *x] = *pixel;
+	pixels[*y * ((*pitch) / sizeof(unsigned int)) + *x] = *pixel;
 	SDL_UnlockTexture(tex);
 }
-Uint32 Gore::GetPixelTexture(SDL_Texture* tex, int* y, int* x, int* w, int* pitch) {
+//Faster if you leave this locked, 
+Uint32 Gore::GetPixelTexture(SDL_Texture* tex, int* y, int* x, int* pitch) {
 	Uint32* pixels;
 	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
+	return pixels[*y * ((*pitch) / sizeof(unsigned int)) + *x];
 	SDL_UnlockTexture(tex);
-	return pixels[(*y * (*w)) + *x];
 }
 //Decodes everything to a 32bit pixel format, but can convert your format to any type
 SDL_Surface* Gore::loadPNG(std::string name, SDL_PixelFormatEnum format, int w, int h) {

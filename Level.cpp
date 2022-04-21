@@ -1,6 +1,20 @@
 #include "Header.h"
 
 
+void Game::MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch) {
+	Uint32* pixels;
+	int pixpitch = (*pitch) / sizeof(unsigned int);
+	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
+	for (int h = sy; h <= endy; h++) {
+		for (int w = sx; w <= endx; w++) {
+			pixels[h * pixpitch + w] = *pixel;
+		}
+	}
+	SDL_UnlockTexture(tex);
+}
+
+
+
 void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning) {
 	if (curnload <= nload.size() - 1) {
 		bool oneframe = false;
@@ -20,7 +34,7 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 
 				break;
 			}
-			createEnemy(sp, tp, enemies, spawnloc[curetype].x, spawnloc[curetype].y, etypes[curetype], rend);
+			createEnemy(sp, tp, enemies, spawnloc[curetype].x, spawnloc[curetype].y, etypes[curetype], 90, rend);
 		}
 		curnload++;
 		prog = 0;
@@ -32,7 +46,7 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 }
 
 
-void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file) {
+void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file) {
 	char* write = (char*)std::malloc((etypes.size() * sizeof(int)) + ((nload.size() * sizeof(int)) + nload.size() * sizeof(int)) + ((sizeof(int) * 2) * spawnloc.size()));
 	int* t = (int*)write;
 	int n = 1;
@@ -70,16 +84,50 @@ void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::
 	for (int i = 0; i < 4; i++) {
 		f << kk[i];
 	}
+	for (auto& i : transforms) {
+		char kur[4];
+		int* tb = (int*)kur;
+		*tb = i.sx;
+		for (int i = 0; i < 4; i++) {
+			f << kur[i];
+		}
+		*tb = i.sy;
+		for (int i = 0; i < 4; i++) {
+			f << kur[i];
+		}
+		*tb = i.endx;
+		for (int i = 0; i < 4; i++) {
+			f << kur[i];
+		}
+		*tb = i.endy;
+		for (int i = 0; i < 4; i++) {
+			f << kur[i];
+		}
+		char kl[8];
+		double* tk = (double*)kl;
+		*tk = i.speed;
+		for (int i = 0; i < 8; i++) {
+			f << kl[i];
+		}
+		*tk = i.activate;
+		for (int i = 0; i < 8; i++) {
+			f << kl[i];
+		}
+	}
+	for (int i = 0; i < 4; i++) {
+		f << kk[i];
+	}
 	f.close();
 	std::free(write);
 }
 
 
 
-void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, const char* file) {
+void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file) {
 	etypes.clear();
 	nload.clear();
 	spawnloc.clear();
+	transforms.clear();
 	std::ifstream f;
 	f.open(file);
 	std::string line;
@@ -154,6 +202,30 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 			}
 		}
 	}
+	t++;
+	//Read transform data
+	while (*t != -1) {
+		Transform i;
+		i.sx = *t;
+		t++;
+		i.sy = *t;
+		t++;
+		i.endx = *t;
+		t++;
+		i.endy = *t;
+		t++;
+		double* tk = (double*)t;
+		i.speed = *tk;
+		tk++;
+		i.activate = *tk;
+		tk++;
+		t += 4;
+		i.ct = 0;
+		i.cx = i.sx;
+		i.cy = i.sy;
+		transforms.push_back(i);
+	}
+
 	f.close();
 	std::free(data);
 }

@@ -37,7 +37,7 @@ public:
 	void clearSurface(SDL_Surface* surf);
 	void clearTexture(SDL_Texture* tex, int* pitch, int w, int h);
 	void SetPixelTexture(SDL_Texture* tex, int* y, int* x, Uint32* pixel, int* pitch);
-	Uint32 GetPixelTexture(SDL_Texture* tex, int* y, int* x, int* w, int* pitch);
+	Uint32 GetPixelTexture(SDL_Texture* tex, int* y, int* x, int* pitch);
 	SDL_Surface* loadPNG(std::string name, SDL_PixelFormatEnum format, int w, int h);
 	SDL_Surface* LoadBMP(const char* file, SDL_PixelFormatEnum format);
 	texp& loadTextureList(std::vector<std::string> names, std::vector<unsigned int> widths, std::vector<unsigned int> heights, SDL_PixelFormatEnum format, SDL_Renderer* rend, std::string filepath = "NULL");
