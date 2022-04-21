@@ -59,6 +59,7 @@ struct Particle : Bullet {
 	SDL_Rect pd;
 	SDL_Rect rect;
 	SDL_Texture* tex;
+	//Uint32 col;
 	bool er;
 };
 
@@ -72,6 +73,7 @@ struct Transform {
 	double activate;
 	double speed;
 	float ct;
+	Uint32 col;
 };
 
 

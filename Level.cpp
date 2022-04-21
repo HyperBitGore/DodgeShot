@@ -103,6 +103,11 @@ void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::
 		for (int i = 0; i < 4; i++) {
 			f << kur[i];
 		}
+		Uint32* tl = (Uint32*)kur;
+		*tl = i.col;
+		for (int i = 0; i < 4; i++) {
+			f << kur[i];
+		}
 		char kl[8];
 		double* tk = (double*)kl;
 		*tk = i.speed;
@@ -213,6 +218,9 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 		i.endx = *t;
 		t++;
 		i.endy = *t;
+		t++;
+		Uint32* tm = (Uint32*)t;
+		i.col = *tm;
 		t++;
 		double* tk = (double*)t;
 		i.speed = *tk;

@@ -25,9 +25,9 @@ texp enem1tex;
 //Third: Small guy like you and dodges your attacks and sounds out hard to dodge patterns or tracking ones
 //Fourth: Tentacles from giant mass on top of screen(maybe stage is boss fight like R type level or mushi level)
 //Fifth: Two bosses at once
-
-
 //If i really need you to be able to deform level, maybe have list of possible deforms that frame and do a mass check
+
+//For having enemies with different angles just make new enemy type for loading and on load just change them to one useable
 std::vector<int> etypes = { 0, 0, 0, 0, 0, 0, 0, 0,
 							0, 0, 0, 0, 0, 0, 0, 0 };
 std::vector<int> nload = { 8, 8};
@@ -57,30 +57,44 @@ int main() {
 	texp text16 = NULL;
 	game.constructAlphabet(rend, font16, { 198, 150, 40 }, text16);
 
+	Uint32 wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
+
 	std::vector<Transform> transforms;
 	Transform trans;
 	trans.activate = 4000;
 	trans.sx = 10;
 	trans.sy = 100;
-	trans.speed = 0.1;
+	trans.speed = 0.05;
 	trans.endx = 790;
 	trans.endy = 100;
 	trans.cx = 10;
 	trans.cy = 100;
 	trans.ct = 0;
+	trans.col = wallcolor;
 	transforms.push_back(trans);
 	trans.activate = 8000;
 	trans.sx = 10;
 	trans.sy = 99;
-	trans.speed = 0.08;
+	trans.speed = 0.03;
 	trans.endx = 790;
 	trans.endy = 99;
 	trans.cx = 10;
 	trans.cy = 99;
 	trans.ct = 0;
+	trans.col = wallcolor;
 	transforms.push_back(trans);
-
-	//game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
+	trans.activate = 50000;
+	trans.sx = 790;
+	trans.sy = 99;
+	trans.speed = 0.03;
+	trans.endx = 10;
+	trans.endy = 99;
+	trans.cx = 790;
+	trans.cy = 99;
+	trans.ct = 0;
+	trans.col = gore.ConvertColorToUint32({ 0, 0, 0, 0 }, surf->format);
+	transforms.push_back(trans);
+	game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
 	game.loadLevel(etypes, nload, spawnloc, transforms, "level.lvl");
 
 	enem1head = gore.loadSpriteList({ "enem1_3.png", "enem1_2.png", "enem1_1.png" }, { 30, 30, 30 }, {50, 50, 50},
@@ -95,13 +109,16 @@ int main() {
 	SDL_Surface* bloodsurf = SDL_CreateRGBSurfaceWithFormat(0, 30, 30, 32, SDL_PIXELFORMAT_RGBA8888);
 	for (int i = 0; i < 30; i++) {
 		for (int j = 0; j < 30; j++) {
-			SDL_Color col = { 255, 50, 30, 255 };
+			SDL_Color col = { rand() % 255 + 180, 50, 30, 255 };
 			gore.SetPixelSurfaceColor(bloodsurf, &i, &j, &col);
 		}
 	}
 	SDL_Texture* bloodtex = SDL_CreateTextureFromSurface(rend, bloodsurf);
 	SDL_FreeSurface(bloodsurf);
-	
+	std::cout << gore.ConvertColorToUint32({ 255, 50, 30, 0 }, surf->format) << std::endl;
+
+	SDL_Texture* particletex = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 800, 800);
+
 	
 	//use surf
 	SDL_Rect wallrect = { 0,0,800,800 };
@@ -111,7 +128,6 @@ int main() {
 	int wallpitch = surf->pitch;
 	int realpitch = wallpitch / sizeof(unsigned int);
 	//Uint32 tcolor = gore.ConvertColorToUint32({ 255, 255, 255, 0 }, surf->format);
-	Uint32 wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
 	game.MassTextureSet(walls, surf, 0, 0, 10, 800, &wallcolor, &wallpitch);
 	game.MassTextureSet(walls, surf, 0, 0, 800, 10, &wallcolor, &wallpitch);
 	game.MassTextureSet(walls, surf, 0, 790, 800, 800, &wallcolor, &wallpitch);
@@ -127,7 +143,6 @@ int main() {
 	std::vector<Bullet> bullets;
 	std::vector<Enemy> enemies;
 	std::vector<Particle> particles;
-	std::vector<Particle> blood;
 
 	double delta;
 	double uptimer = 0;
@@ -279,15 +294,29 @@ int main() {
 				i.ct += delta;
 				bool er = false;
 				if (i.ct > i.speed) {
-					gore.SetPixelTexture(walls, &i.cy, &i.cx, &wallcolor, &wallpitch);
-					i.cx++;
-					if (i.cx >= i.endx) {
-						if (i.cy >= i.endy) {
-							er = true;
+					gore.SetPixelTexture(walls, &i.cy, &i.cx, &i.col, &wallpitch);
+					if (i.cx > i.endx) {
+						i.cx--;
+						if (i.cx <= i.endx) {
+							if (i.cy >= i.endy) {
+								er = true;
+							}
+							else {
+								i.cy++;
+								i.cx = i.sx;
+							}
 						}
-						else {
-							i.cy++;
-							i.cx = i.sx;
+					}
+					else {
+						i.cx++;
+						if (i.cx >= i.endx) {
+							if (i.cy >= i.endy) {
+								er = true;
+							}
+							else {
+								i.cy++;
+								i.cx = i.sx;
+							}
 						}
 					}
 					i.ct = 0;
@@ -303,34 +332,37 @@ int main() {
 		SDL_RenderCopy(rend, walls, NULL, &wallrect);
 		//game.updateBackground(rend, backtex, &back, delta);
 		n = 0;
-		for (auto& i : particles) {
-			i.trajtimer += delta;
-			if (i.trajtimer > i.timermax) {
-				i.x += i.trajx;
-				i.y += i.trajy;
-				i.rect.x = i.x;
-				i.rect.y = i.y;
-				i.trajtimer = 0;
-				if (i.x < 0 || i.y < 0 || i.x > 800 || i.y > 800) {
-					i.er = true;
+		for (int i = 0; i < particles.size();) {
+			particles[i].trajtimer += delta;
+			if (particles[i].trajtimer > particles[i].timermax) {
+				particles[i].x += particles[i].trajx;
+				particles[i].y += particles[i].trajy;
+				particles[i].rect.x = particles[i].x;
+				particles[i].rect.y = particles[i].y;
+				particles[i].trajtimer = 0;
+				if (particles[i].x < 0 || particles[i].y < 0 || particles[i].x > 800 || particles[i].y > 800) {
+					particles[i].er = true;
 				}
-				if (i.type == 1) {
-					if (game.isColliding(i, player)) {
-						i.er = true;
+				if (particles[i].type == 1) {
+					if (game.isColliding(particles[i], player)) {
+						particles[i].er = true;
 						player.health++;
+						score += 800;
 					}
 				}
 			}
 
 			//Instead of making new texture grab pixel data from the enemies texture
-			SDL_RenderCopy(rend, i.tex, &i.pd, &i.rect);
-			if (i.er) {
-				particles.erase(particles.begin() + n);
+			SDL_RenderCopy(rend, particles[i].tex, &particles[i].pd, &particles[i].rect);
+			if (particles[i].er) {
+				particles.erase(particles.begin() + i);
 			}
 			else {
-				n++;
+				i++;
 			}
 		}
+
+
 		SDL_SetRenderDrawColor(rend, 255, 50, 50, 0);
 		SDL_Rect hrect = { 750, 680, 50, player.health };
 		SDL_RenderFillRect(rend, &hrect);
@@ -431,7 +463,6 @@ int main() {
 				enemies.erase(enemies.begin() + cn);
 			}
 			if (er) {
-				//Add particles flying off in random directions here
 				switch (i.type) {
 				case 0:
 					score += 1000;
@@ -447,8 +478,9 @@ int main() {
 							p.rect = { (int)p.x, (int)p.y, 1, 1 };
 							p.pd = { w, h, 1, 1 };
 							p.trajtimer = 0;
-							p.timermax = 0.01;
+							p.timermax = 0.007;
 							p.tex = i.texs->current;
+							//p.col = gore.GetPixelSurface(i.sprites->current, &h, &w);
 							p.trajx = game.trajX(rand() % 358);
 							p.trajy = game.trajY(rand() % 358);
 							p.type = 0;
@@ -457,23 +489,26 @@ int main() {
 							p.er = false;
 							particles.push_back(p);
 							int roll = rand() % 100;
-							if (roll > 70) {
+							if (roll > 90) {
 								Particle b;
 								b.x = i.x + w + 1;
 								b.y = i.y + h + 1;
-								b.rect = { (int)b.x, (int)b.y, 1, 1 };
-								b.pd = { 0, 0, 1, 1 };
+								int pw = rand() % 10 + 5;
+								int ph = rand() % 10 + 3;
+								b.rect = { (int)b.x, (int)b.y, pw, ph };
+								b.pd = { 0, 0, pw, ph};
 								b.trajtimer = 0;
 								int max = rand() % 8 + 3;
 								float tmax = (float)max * 0.001;
 								b.timermax = tmax;
 								b.tex = bloodtex;
+								//b.col = 4281474815;
 								//maybe change this to have range to give more dynamic feel
 								b.trajx = game.trajX(90);
 								b.trajy = game.trajY(90);
 								b.type = 1;
-								b.w = 1;
-								b.h = 1;
+								b.w = pw;
+								b.h = ph;
 								b.er = false;
 								particles.push_back(b);
 							}
