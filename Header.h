@@ -10,6 +10,29 @@ extern int curetype;
 extern int prog;
 extern spxp enem1head;
 extern texp enem1tex;
+extern spxp enem2head;
+extern texp enem2tex;
+extern spxp enem3head;
+extern texp enem3tex;
+
+class Timer {
+private:
+	std::chrono::time_point<std::chrono::steady_clock> start;
+	std::chrono::time_point<std::chrono::steady_clock> end;
+public:
+	void startTime() {
+		start = std::chrono::steady_clock::now();
+	}
+	double getTime() {
+		end = std::chrono::steady_clock::now();
+		return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	}
+	void resetTime() {
+		start = std::chrono::steady_clock::now();
+		end = std::chrono::steady_clock::now();
+	}
+};
+
 struct Point {
 	int x;
 	int y;
@@ -28,6 +51,7 @@ struct Bullet : Entity {
 	double trajtimer;
 	double timermax;
 	int type;
+	SDL_Texture* tex;
 };
 struct Enemy : Entity {
 	float movetimer;
@@ -54,6 +78,12 @@ struct Enemy : Entity {
 	int offscreen;
 	float tgx;
 	bool pause;
+	double ptime;
+	double maxp;
+	int pburst;
+	int pmax;
+	float burstspeed;
+	float origshotspeed;
 };
 struct Particle : Bullet {
 	SDL_Rect pd;
@@ -81,7 +111,7 @@ class Game {
 public:
 	float trajX(float deg);
 	float trajY(float deg);
-	Bullet createBullet(float x, float y, int w, int h, float deg, float speed, int type);
+	Bullet createBullet(float x, float y, int w, int h, float deg, float speed, int type, SDL_Texture* tex);
 	bool isColliding(Entity b, Entity e) {
 		if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
 			return true;
@@ -113,20 +143,3 @@ public:
 	void MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
 };
 
-class Timer {
-private:
-	std::chrono::time_point<std::chrono::steady_clock> start;
-	std::chrono::time_point<std::chrono::steady_clock> end;
-public:
-	void startTime() {
-		start = std::chrono::steady_clock::now();
-	}
-	double getTime() {
-		end = std::chrono::steady_clock::now();
-		return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-	}
-	void resetTime() {
-		start = std::chrono::steady_clock::now();
-		end = std::chrono::steady_clock::now();
-	}
-};

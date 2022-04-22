@@ -14,7 +14,7 @@ float Game::trajY(float deg) {
 }
 
 
-Bullet Game::createBullet(float x, float y, int w, int h, float deg, float speed, int type) {
+Bullet Game::createBullet(float x, float y, int w, int h, float deg, float speed, int type, SDL_Texture* tex) {
 	Bullet b;
 	b.trajtimer = 0;
 	b.timermax = speed;
@@ -25,5 +25,6 @@ Bullet Game::createBullet(float x, float y, int w, int h, float deg, float speed
 	b.w = w;
 	b.x = x;
 	b.y = y;
+	b.tex = tex;
 	return b;
 }

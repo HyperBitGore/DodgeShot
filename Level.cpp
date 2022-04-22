@@ -31,7 +31,12 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 				tp = enem1tex;
 				break;
 			case 1:
-
+				sp = enem2head;
+				tp = enem2tex;
+				break;
+			case 2:
+				sp = enem3head;
+				tp = enem3tex;
 				break;
 			}
 			createEnemy(sp, tp, enemies, spawnloc[curetype].x, spawnloc[curetype].y, etypes[curetype], 90, rend);
