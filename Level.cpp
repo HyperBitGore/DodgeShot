@@ -1,7 +1,7 @@
 #include "Header.h"
 
 
-void Game::MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch) {
+void Game::MassTextureSet(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch) {
 	Uint32* pixels;
 	int pixpitch = (*pitch) / sizeof(unsigned int);
 	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
@@ -12,12 +12,35 @@ void Game::MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, i
 	}
 	SDL_UnlockTexture(tex);
 }
+void Game::MassTextureSet(SDL_Texture* tex, std::vector<Point> points, std::vector<Uint32>colors, int* pitch) {
+	Uint32* pixels;
+	int pixpitch = (*pitch) / sizeof(unsigned int);
+	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
+	for (int i = 0; i < points.size(); i++) {
+		pixels[points[i].y * pixpitch + points[i].x] = colors[i];
+	}
+	SDL_UnlockTexture(tex);
+}
+bool Game::MassTextureCheck(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch) {
+	Uint32* pixels;
+	int pixpitch = (*pitch) / sizeof(unsigned int);
+	SDL_LockTexture(tex, NULL, (void**)&pixels, pitch);
+	for (int h = sy; h <= endy; h++) {
+		for (int w = sx; w <= endx; w++) {
+			if (pixels[h * pixpitch + w] == *pixel) {
+				//SDL_UnlockTexture(tex);
+				return false;
+			}
+		}
+	}
+	//SDL_UnlockTexture(tex);
+	return true;
+}
 
-
-
-void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning) {
+void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning, bool* bossmode) {
 	if (curnload <= nload.size() - 1) {
 		bool oneframe = false;
+		*bossmode = false;
 		for (int i = prog; i < nload[curnload]; i++, curetype++, oneframe = true) {
 			if (oneframe) {
 				prog = i;
@@ -54,6 +77,7 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 	}
 	else {
 		*spawning = false;
+		*bossmode = true;
 	}
 }
 

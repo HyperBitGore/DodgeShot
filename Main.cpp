@@ -14,11 +14,11 @@ texp enem2tex;
 spxp enem3head;
 texp enem3tex;
 
-//Level one done prereqs(background, transforms, and boss)
+//Level one done prereqs(background, boss(will slowly box you in with smaller and smaller boxes))
 //Level one actually built out and tested
-//Check entire side of player so you can't clip through walls
-//Optimize enemies by only editing the pixels that need to be changed instead of remaking entire texture,
-//also change it to only add to destroyed vector when a that pixel is destroyed instead of map of entire texture
+//Effect and sound for when taking damage
+//Death condition
+//Make enemy point maps on startup and just copy them when a new enemy is made
 //6 basic enemies(less if deem too much time)
 //3 levels(3 bosses) like classic STG shmups
 //Enemy that grows pixels back
@@ -60,7 +60,7 @@ std::vector<int> etypes = { 0, 0, 0,
 							-1,
 							-1,
 							-1,
-							1, 1,
+							1, 0,
 							-1,
 							-1,
 							-1,
@@ -95,10 +95,29 @@ std::vector<int> etypes = { 0, 0, 0,
 							-1,	
 							-1,
 							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							1, 1,
+							0, 0, 0,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							0, 0,
 							-1
 							,-1,};
 std::vector<int> nload = { 3, 5, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1,1,1,1,4,1,1,1,3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,
-	2,1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	2,1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1};
 std::vector<Point> spawnloc = { {-100, 100}, {300, 10}, {500, 10}, 
 								{910, 60}, {60, 10}, {-200, 200}, {200, 10}, {450, 10},
 								{450, 10},
@@ -118,7 +137,7 @@ std::vector<Point> spawnloc = { {-100, 100}, {300, 10}, {500, 10},
 								{50, 0}, 
 								{50, 0}, 
 								{50, 0}, 
-								{-400, 100}, {405, 0}, {1200, 100}, 
+								{-400, 100}, {550, 0}, {1200, 100}, 
 								{50, 0}, 
 								{50, 0}, 
 								{50, 0}, 
@@ -158,6 +177,25 @@ std::vector<Point> spawnloc = { {-100, 100}, {300, 10}, {500, 10},
 								{50, 0},
 								{50, 0},
 								{50, 0}, 
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{250, -10},{450, -10},
+								{-250, 150},{1100, 100},{-400, 100},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{300, 0},{505, 0},
+								{50, 0},
 								{50, 0}, };
 
 
@@ -253,7 +291,6 @@ int main() {
 	trans.ct = 0;
 	trans.col = 0;
 	transforms.push_back(trans);
-	//for after the line 99 wave
 	trans.activate = 62000;
 	trans.sx = 10;
 	trans.sy = 600;
@@ -300,7 +337,7 @@ int main() {
 	transforms.push_back(trans);
 	trans.activate = 70000;
 	trans.sx = 600;
-	trans.sy = 10;
+	trans.sy = 20;
 	trans.speed = 0.01;
 	trans.endx = 600;
 	trans.endy = 780;
@@ -342,6 +379,83 @@ int main() {
 	trans.ct = 0;
 	trans.col = wallcolor;
 	transforms.push_back(trans);
+	trans.activate = 150000;
+	trans.sx = 600;
+	trans.sy = 285;
+	trans.speed = 0.01;
+	trans.endx = 20;
+	trans.endy = 285;
+	trans.cx = 600;
+	trans.cy = 285;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 150000;
+	trans.sx = 400;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 400;
+	trans.endy = 780;
+	trans.cx = 400;
+	trans.cy = 10;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 155000;
+	trans.sx = 50;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 50;
+	trans.endy = 780;
+	trans.cx = 50;
+	trans.cy = 10;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 155000;
+	trans.sx = 600;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 600;
+	trans.endy = 780;
+	trans.cx = 600;
+	trans.cy = 10;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 160000;
+	trans.sx = 21;
+	trans.sy = 600;
+	trans.speed = 0.01;
+	trans.endx = 780;
+	trans.endy = 600;
+	trans.cx = 21;
+	trans.cy = 600;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 160000;
+	trans.sx = 21;
+	trans.sy = 601;
+	trans.speed = 0.01;
+	trans.endx = 780;
+	trans.endy = 601;
+	trans.cx = 21;
+	trans.cy = 601;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 160000;
+	trans.sx = 21;
+	trans.sy = 599;
+	trans.speed = 0.01;
+	trans.endx = 780;
+	trans.endy = 599;
+	trans.cx = 21;
+	trans.cy = 599;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
 	std::cout << spawnloc.size() << " : " << etypes.size() << std::endl;
 	std::cout << nload.size() << std::endl;
 	game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
@@ -359,6 +473,9 @@ int main() {
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 	enem3tex = gore.loadTextureList({ "enem3_2.png", "enem3_1.png" }, { 100, 100, 100 }, { 100, 100, 100 },
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+
+	texp playertex = gore.loadTextureList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+	spxp playersprites = gore.loadSpriteList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 
 	texp gr = gore.loadTextureList({ "graze4.png", "graze3.png", "graze2.png", "graze1.png" }, { 60, 60, 60, 60 }, { 60, 60, 60, 60 }
 	, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
@@ -384,8 +501,8 @@ int main() {
 	std::cout << gore.ConvertColorToUint32({ 255, 50, 30, 0 }, surf->format) << std::endl;
 
 	SDL_Texture* particletex = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 800, 800);
+	SDL_SetTextureBlendMode(particletex, SDL_BLENDMODE_BLEND);
 
-	
 	//use surf
 	SDL_Rect wallrect = { 0,0,800,800 };
 	SDL_Texture* walls = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 800, 800);
@@ -395,20 +512,23 @@ int main() {
 	int realpitch = wallpitch / sizeof(unsigned int);
 	//Uint32 tcolor = gore.ConvertColorToUint32({ 255, 255, 255, 0 }, surf->format);
 	
-	game.MassTextureSet(walls, surf, 0, 0, 10, 800, &wallcolor, &wallpitch);
-	game.MassTextureSet(walls, surf, 0, 0, 800, 10, &wallcolor, &wallpitch);
-	game.MassTextureSet(walls, surf, 0, 790, 800, 800, &wallcolor, &wallpitch);
-	game.MassTextureSet(walls, surf, 790, 0, 800, 800, &wallcolor, &wallpitch);
+	game.MassTextureSet(walls, 0, 0, 10, 800, &wallcolor, &wallpitch);
+	game.MassTextureSet(walls, 0, 0, 800, 10, &wallcolor, &wallpitch);
+	game.MassTextureSet(walls, 0, 790, 800, 800, &wallcolor, &wallpitch);
+	game.MassTextureSet(walls, 790, 0, 800, 800, &wallcolor, &wallpitch);
 	//gore.SetPixelTexture(walls, &ty, &tx, &wallcolor, &wallpitch);
 
 	Mix_Chunk* grazesound = Mix_LoadWAV("Sprites/graze.wav");
 	Mix_Chunk* ehitsound = Mix_LoadWAV("Sprites/ehit.wav");
 	Mix_Chunk* edeathsound = Mix_LoadWAV("Sprites/edeath.wav");
 
-	Entity player = { 400, 400, 15, 20 };
+	Entity player = { 400, 400, 5, 5 };
 	player.health = 50;
+	texp pbegin = playertex;
 	Entity graze = { 400, 400, 50, 50 };
+	Entity pdraw = { 400, 400, 20, 25 };
 	Entity back = { 0, -200, 800, 800 };
+	Boss boss;
 	std::vector<Bullet> bullets;
 	std::vector<Enemy> enemies;
 	std::vector<Particle> particles;
@@ -423,11 +543,13 @@ int main() {
 	double grtimer = 0;
 	double grstimer = 0;
 	double spawntimer = 0;
+	double panimetime = 0;
 
 	bool run = false;
 	bool cgr = false;
 	bool spawning = false;
-	
+	bool bossmode = false;
+
 	//int framespawn = 0;
 	//int spawngap = 500;
 
@@ -441,6 +563,7 @@ int main() {
 	gaptime.startTime();
 	double ctime = 0;
 	double lvltime = 0;
+	game.loadBoss(&boss, level, rend);
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -459,7 +582,7 @@ int main() {
 		if (spawning) {
 			double dv = gaptime.getTime();
 			if (dv >= 200) {
-				game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning);
+				game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
 				gaptime.resetTime();
 			}
 		}
@@ -470,7 +593,7 @@ int main() {
 		if (ctime > 2000) {
 			spawning = true;
 			//spawngap = fps / 2;
-			game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning);
+			game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
 			etime.resetTime();
 			ctime = 0;
 		}
@@ -508,27 +631,25 @@ int main() {
 				downtimer = 0;
 			}
 		}
-		int chy = player.y;
-		int chx = player.x + 8;
-		int chy2 = player.y + player.h;
-		int chx2 = player.x + 8;
+		int chy = pdraw.y;
+		int chx = pdraw.x + 8;
+		int chy2 = pdraw.y + pdraw.h;
+		int chx2 = pdraw.x + 8;
 		if (gore.GetPixelTexture(walls, &chy, &chx, &wallpitch) != 0) {
 			player.y++;
 		}
 		else if (gore.GetPixelTexture(walls, &chy2, &chx2, &wallpitch) != 0) {
 			player.y--;
 		}
-		chx = player.x - 1;
-		chx2 = player.x + 15;
-		if (gore.GetPixelTexture(walls, &chy, &chx, &wallpitch) != 0) {
+		if (!game.MassTextureCheck(walls, pdraw.y, pdraw.x, pdraw.x, pdraw.y + pdraw.h, &wallcolor, &wallpitch)) {
 			player.x++;
 		}
-		else if (gore.GetPixelTexture(walls, &chy, &chx2, &wallpitch) != 0) {
+		if (!game.MassTextureCheck(walls, pdraw.y, pdraw.x + pdraw.w, pdraw.x + pdraw.w, pdraw.y + pdraw.h, &wallcolor, &wallpitch)) {
 			player.x--;
 		}
 		if (shootimer > 0.1) {
 			if (keys[SDL_SCANCODE_Z]) {
-				bullets.push_back(game.createBullet(player.x + 8, player.y + 10, 5, 5, 270, 0.001 , 1, pbullet));
+				bullets.push_back(game.createBullet(player.x + 8, player.y + 10, 5, 5, 270, 0.001, 1, pbullet));
 				bullets.push_back(game.createBullet(player.x + 9, player.y + 10, 5, 5, 270, 0.001, 1, pbullet));
 				bullets.push_back(game.createBullet(player.x + 7, player.y + 10, 5, 5, 270, 0.001, 1, pbullet));
 				bullets.push_back(game.createBullet(player.x + 6, player.y + 10, 5, 5, 270, 0.001, 1, pbullet));
@@ -564,6 +685,8 @@ int main() {
 		}
 		graze.x = player.x - 25;
 		graze.y = player.y - 25;
+		pdraw.x = player.x - 7;
+		pdraw.y = player.y - 10;
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
 		SDL_RenderClear(rend);
 		int n = 0;
@@ -623,10 +746,10 @@ int main() {
 					particles[i].er = true;
 				}
 				if (particles[i].type == 1) {
-					if (game.isColliding(particles[i], player)) {
+					if (game.isColliding(particles[i], pdraw)) {
 						particles[i].er = true;
 						player.health++;
-						score += 800;
+						score += 50;
 					}
 				}
 			}
@@ -637,10 +760,10 @@ int main() {
 				particles.erase(particles.begin() + i);
 			}
 			else {
+				
 				i++;
 			}
 		}
-
 		if (player.health > 100) {
 			player.health = 100;
 		}
@@ -649,10 +772,12 @@ int main() {
 		SDL_RenderFillRect(rend, &hrect);
 
 		bool rebuiltal = false;
+		bool pchange = false;
 		int cn = 0;
 		for (int i = 0; i < enemies.size();) {
 			bool er = false;
 			bool skipmove = false;
+			bool skipscore = false;
 			enemies[i].shootimer += delta;
 			enemies[i].movetimer += delta;
 			enemies[i].animtimer += delta;
@@ -691,7 +816,7 @@ int main() {
 						}
 						break;
 					}
-					
+
 				}
 				else {
 					if (!skipmove) {
@@ -706,39 +831,86 @@ int main() {
 				float angle;
 				switch (enemies[i].type) {
 				case 0:
-					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+					angle = std::atan2f((player.y - 5) - enemies[i].y, (player.x - 6) - enemies[i].x) * 180.0 / M_PI;
 					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.008, 0, ebullet1tex));
 					break;
 				case 1:
-					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0/M_PI;
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1) + 5), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 5) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 5) - enemies[i].x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					switch (enemies[i].pattern) {
+					case 1:
+						angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1) + 5), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 5) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 5) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+						break;
+					case 2:
+						angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.005, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 10, 10, 10, angle, 0.005, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 20, 10, 10, angle, 0.005, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 5) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 30, 10, 10, angle, 0.005, 0, ebullet1tex));
+						break;
+					}
 					enemies[i].pburst++;
 					if (enemies[i].pburst > enemies[i].pmax) {
 						enemies[i].ptime = 0;
 						enemies[i].pburst = 0;
+						if (enemies[i].pattern == 1) {
+							enemies[i].pattern = 2;
+						}
+						else {
+							enemies[i].pattern = 1;
+						}
 						enemies[i].shootmax = enemies[i].origshotspeed;
 					}
 					break;
 				case 2:
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 75, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 70, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 105, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 100, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 95, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 85, 0.005, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 10, 10, 10, angle, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 20, 10, 10, angle, 0.005, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 30, 10, 10, angle, 0.005, 0, ebullet1tex));
+					switch (enemies[i].pattern) {
+					case 0:
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 75, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 70, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 105, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 100, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 95, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 85, 0.005, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 10, 10, 10, angle, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 20, 10, 10, angle, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 30, 10, 10, angle, 0.005, 0, ebullet1tex));
+						break;
+					case 1:
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 0, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 15, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 30, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 45, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 60, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 75, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 90, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 105, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 120, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 135, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 150, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 165, 0.005, 0, ebullet1tex));
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 180, 0.005, 0, ebullet1tex));
+						break;
+					}
+					enemies[i].pburst++;
+					if (enemies[i].pburst > enemies[i].pmax) {
+						enemies[i].pattern++;
+						if (enemies[i].pattern > 1) {
+							enemies[i].pattern = 0;
+						}
+						enemies[i].pburst = 0;
+					}
 					break;
 				}
 				enemies[i].shootimer = 0;
@@ -749,6 +921,22 @@ int main() {
 				if (enemies[i].sprites == NULL) {
 					enemies[i].sprites = enemies[i].start;
 					enemies[i].texs = enemies[i].tstart;
+				}
+				else {
+					std::vector<Point> ps;
+					std::vector<Uint32> colors;
+					gore.clearTexture(enemies[i].tex, &enemies[i].surf->pitch, enemies[i].w, enemies[i].h);
+					for (int h = 0; h < enemies[i].h; h++) {
+						for (int w = 0; w < enemies[i].w; w++) {
+							if (!enemies[i].points[h][w]) {
+								Uint32 col = gore.GetPixelSurface(enemies[i].sprites->current, &h, &w);
+								colors.push_back(col);
+								ps.push_back({ w, h });
+								//gore.SetPixelTexture(enemies[i].tex, &h, &w, &col, &enemies[i].surf->pitch);
+							}
+						}
+					}
+					game.MassTextureSet(enemies[i].tex, ps, colors, &enemies[i].surf->pitch);
 				}
 				enemies[i].change = true;
 				enemies[i].animtimer = 0;
@@ -765,17 +953,25 @@ int main() {
 					dest = true;
 				}
 				if (!dest) {
-					gore.clearSurface(enemies[i].surf);
-					SDL_DestroyTexture(enemies[i].tex);
-					for (int h = 0; h < enemies[i].h; h++) {
+					//gore.clearSurface(enemies[i].surf);
+					//SDL_DestroyTexture(enemies[i].tex);
+					/*for (int h = 0; h < enemies[i].h; h++) {
 						for (int w = 0; w < enemies[i].w; w++) {
 							if (!enemies[i].points[h][w]) {
 								Uint32 col = gore.GetPixelSurface(enemies[i].sprites->current, &h, &w);
 								gore.SetPixelSurface(enemies[i].surf, &h, &w, &col);
 							}
 						}
+					}*/
+					//enemies[i].tex = SDL_CreateTextureFromSurface(rend, enemies[i].surf);
+					for (int j = 0; j < enemies[i].destroyed.size(); j++) {
+						if (enemies[i].points[enemies[i].destroyed[j].y][enemies[i].destroyed[j].x]) {
+							Uint32 col = 0;
+							gore.SetPixelTexture(enemies[i].tex, &enemies[i].destroyed[j].y, &enemies[i].destroyed[j].x, &col, &wallpitch);
+						}
+
 					}
-					enemies[i].tex = SDL_CreateTextureFromSurface(rend, enemies[i].surf);
+					enemies[i].destroyed.clear();
 					enemies[i].change = false;
 					rebuiltal = true;
 				}
@@ -784,75 +980,76 @@ int main() {
 				}
 			}
 			SDL_Rect rect = { enemies[i].x, enemies[i].y, enemies[i].w, enemies[i].h };
-			SDL_RenderCopy(rend, enemies[i].tex , NULL, &rect);
+			SDL_RenderCopy(rend, enemies[i].tex, NULL, &rect);
 			if (enemies[i].y > 800) {
-				SDL_FreeSurface(enemies[i].surf);
-				SDL_DestroyTexture(enemies[i].tex);
-				enemies.erase(enemies.begin() + cn);
+				er = true;
+				skipscore = true;
 			}
 			if (er) {
-				switch (enemies[i].type) {
-				case 0:
-					score += 1000;
-					break;
-				case 1:
-					score += 5000;
-					break;
-				case 2:
-					score += 20000;
-					break;
-				}
-				//explosion particle creation
-				for (int h = 0; h < enemies[i].h; h++) {
-					for (int w = 0; w < enemies[i].w; w++) {
-						if (!enemies[i].points[h][w]) {
-							Particle p;
-							p.x = enemies[i].x + w + 1;
-							p.y = enemies[i].y + h + 1;
-							p.rect = { (int)p.x, (int)p.y, 1, 1 };
-							p.pd = { w, h, 1, 1 };
-							p.trajtimer = 0;
-							p.timermax = 0.007;
-							p.tex = enemies[i].texs->current;
-							//p.col = gore.GetPixelSurface(i.sprites->current, &h, &w);
-							p.trajx = game.trajX(rand() % 358);
-							p.trajy = game.trajY(rand() % 358);
-							p.type = 0;
-							p.w = 1;
-							p.h = 1;
-							p.er = false;
-							particles.push_back(p);
-							int roll = rand() % 100;
-							if (roll > 90) {
-								Particle b;
-								b.x = enemies[i].x + w + 1;
-								b.y = enemies[i].y + h + 1;
-								int pw = rand() % 10 + 5;
-								int ph = rand() % 10 + 3;
-								b.rect = { (int)b.x, (int)b.y, pw, ph };
-								b.pd = { 0, 0, pw, ph};
-								b.trajtimer = 0;
-								int max = rand() % 8 + 3;
-								float tmax = (float)max * 0.001;
-								b.timermax = tmax;
-								b.tex = bloodtex;
-								//b.col = 4281474815;
-								//maybe change this to have range to give more dynamic feel
-								b.trajx = game.trajX(90);
-								b.trajy = game.trajY(90);
-								b.type = 1;
-								b.w = pw;
-								b.h = ph;
-								b.er = false;
-								particles.push_back(b);
+				if (!skipscore) {
+					switch (enemies[i].type) {
+					case 0:
+						score += 1000;
+						break;
+					case 1:
+						score += 5000;
+						break;
+					case 2:
+						score += 20000;
+						break;
+					}
+					//explosion particle creation
+					for (int h = 0; h < enemies[i].h; h++) {
+						for (int w = 0; w < enemies[i].w; w++) {
+							if (!enemies[i].points[h][w]) {
+								Particle p;
+								p.x = enemies[i].x + w + 1;
+								p.y = enemies[i].y + h + 1;
+								p.rect = { (int)p.x, (int)p.y, 1, 1 };
+								p.pd = { w, h, 1, 1 };
+								p.trajtimer = 0;
+								p.timermax = 0.007;
+								p.tex = enemies[i].texs->current;
+								p.col = gore.GetPixelSurface(enemies[i].sprites->current, &h, &w);
+								p.trajx = game.trajX(rand() % 358);
+								p.trajy = game.trajY(rand() % 358);
+								p.type = 0;
+								p.w = 1;
+								p.h = 1;
+								p.er = false;
+								particles.push_back(p);
+								int roll = rand() % 100;
+								if (roll > 90) {
+									Particle b;
+									b.x = enemies[i].x + w + 1;
+									b.y = enemies[i].y + h + 1;
+									int pw = rand() % 10 + 5;
+									int ph = rand() % 10 + 3;
+									b.rect = { (int)b.x, (int)b.y, pw, ph };
+									b.pd = { 0, 0, pw, ph };
+									b.trajtimer = 0;
+									int max = rand() % 8 + 3;
+									float tmax = (float)max * 0.001;
+									b.timermax = tmax;
+									b.tex = bloodtex;
+									//b.col = 4281474815;
+									//maybe change this to have range to give more dynamic feel
+									b.trajx = game.trajX(90);
+									b.trajy = game.trajY(90);
+									b.type = 1;
+									b.w = pw;
+									b.h = ph;
+									b.er = false;
+									particles.push_back(b);
+								}
 							}
 						}
 					}
+					Mix_PlayChannel(1, edeathsound, 0);
 				}
 				SDL_FreeSurface(enemies[i].surf);
 				SDL_DestroyTexture(enemies[i].tex);
 				enemies.erase(enemies.begin() + i);
-				Mix_PlayChannel(1, edeathsound, 0);
 			}
 			else {
 				i++;
@@ -866,6 +1063,9 @@ int main() {
 				bullets[i].y += bullets[i].trajy;
 				bullets[i].trajtimer = 0;
 			}
+			int by = 0;
+			int bx = 0;
+			bool skip = false;
 			switch (bullets[i].type) {
 			case 0:
 				if (game.isColliding(bullets[i], graze)) {
@@ -874,70 +1074,90 @@ int main() {
 						bullets[i].x = -30;
 					}
 					else {
-						score++;
 						cgr = true;
-						//bx = bullets[i].x;
-						//bang = std::atan2f((player.y - bullets[i].y), (bullets[i].x - player.x));
 					}
 				}
-				break;
+					break;
 			case 1:
+				by = (int)bullets[i].y;
+				bx = (int)bullets[i].x;
 				//Check collision with enemy and delete pixel it's colliding with
-				for (auto& j : enemies) {
-					if (game.isColliding(bullets[i], j)) {
-						int cx = 0;
-						int cy = 0;
-						if (bullets[i].x > j.x) { cx = bullets[i].x - j.x; }
-						else { cx = j.x - bullets[i].x; }
-						if (bullets[i].y > j.y) { cy = bullets[i].y - j.y; }
-						else { cy = j.y - bullets[i].y; }
-						if (!j.points[cy][cx]) {
-							j.points[cy][cx] = true;
-							j.change = true;
-							Mix_PlayChannel(0, ehitsound, 0);
-							bullets[i].x = -30;
+				if (gore.GetPixelTexture(walls, &by, &bx, &wallpitch) != 0) {
+					bullets[i].x = -30;
+					skip = true;
+				}
+				if (!skip) {
+					for (auto& j : enemies) {
+						if (game.isColliding(bullets[i], j)) {
+							int cx = 0;
+							int cy = 0;
+							if (bullets[i].x > j.x) { cx = bullets[i].x - j.x; }
+							else { cx = j.x - bullets[i].x; }
+							if (bullets[i].y > j.y) { cy = bullets[i].y - j.y; }
+							else { cy = j.y - bullets[i].y; }
+							if (gore.GetPixelTexture(j.tex, &cy, &cx, &j.surf->pitch) != 0) {
+								if (!j.points[cy][cx]) {
+									j.points[cy][cx] = true;
+									j.destroyed.push_back({ cx, cy });
+									j.change = true;
+									Mix_PlayChannel(0, ehitsound, 0);
+									score += 2;
+									bullets[i].x = -30;
+								}
+							}
 						}
 					}
 				}
 				break;
-			}
-			SDL_Rect rect = { bullets[i].x, bullets[i].y, bullets[i].w, bullets[i].h };
-			SDL_RenderCopy(rend, bullets[i].tex, NULL, &rect);
-			if (bullets[i].x < 0 || bullets[i].x > 800 || bullets[i].y < 0 || bullets[i].y > 800) {
-				bullets.erase(bullets.begin() + i);
-			}
-			else {
-				i++;
-			}
-		}
-
-		SDL_SetRenderDrawColor(rend, 200, 0, 0, 0);
-		SDL_Rect prect = { player.x, player.y, player.w, player.h };
-		SDL_RenderFillRect(rend, &prect);
-		if (cgr) {
-			grtimer += delta;
-			grstimer += delta;
-			if (grtimer > 0.1) {
-				gr = gr->next;
-				if (gr == NULL) {
-					gr = gbeg;
 				}
-				grtimer = 0;
+				SDL_Rect rect = { bullets[i].x, bullets[i].y, bullets[i].w, bullets[i].h };
+				SDL_RenderCopy(rend, bullets[i].tex, NULL, &rect);
+				if (bullets[i].x < 0 || bullets[i].x > 800 || bullets[i].y < 0 || bullets[i].y > 800) {
+					bullets.erase(bullets.begin() + i);
+				}
+				else {
+					i++;
+				}
 			}
-			if (grstimer > 0.06) {
-				Mix_PlayChannel(2, grazesound, 0);
-				grstimer = 0;
+			panimetime += delta;
+			if (panimetime > 0.2) {
+				playertex = playertex->next;
+				if (playertex == NULL) {
+					playertex = pbegin;
+				}
+				panimetime = 0;
+				pchange = true;
 			}
-			SDL_Rect rect = { player.x - 20, player.y - 20, 60, 60 };
-			SDL_RenderCopy(rend, gr->current, NULL, &rect);
-			//SDL_RenderCopyEx(rend, gr->current, NULL, &rect, bang, NULL, flip);
-		}
+			SDL_Rect prect = { pdraw.x, pdraw.y, pdraw.w, pdraw.h };
+			//SDL_RenderFillRect(rend, &prect);
+			SDL_RenderCopy(rend, playertex->current, NULL, &prect);
+			SDL_SetRenderDrawColor(rend, 200, 255, 0, 0);
+			SDL_Rect drect = { player.x, player.y, player.w, player.h };
+			SDL_RenderFillRect(rend, &drect);
+			if (cgr) {
+				grtimer += delta;
+				grstimer += delta;
+				if (grtimer > 0.1) {
+					gr = gr->next;
+					if (gr == NULL) {
+						gr = gbeg;
+					}
+					grtimer = 0;
+				}
+				if (grstimer > 0.06) {
+					Mix_PlayChannel(2, grazesound, 0);
+					score += 10;
+					grstimer = 0;
+				}
+				SDL_Rect rect = { player.x - 20, player.y - 20, 60, 60 };
+				SDL_RenderCopy(rend, gr->current, NULL, &rect);
+				//SDL_RenderCopyEx(rend, gr->current, NULL, &rect, bang, NULL, flip);
+			}
 
-		std::string temp = "Score: " + std::to_string(score);
-		gore.drawText(rend, text16, temp, 10, 10, 16, 16);
-		SDL_RenderPresent(rend);
+			std::string temp = "Score: " + std::to_string(score);
+			gore.drawText(rend, text16, temp, 10, 10, 16, 16);
+			SDL_RenderPresent(rend);
 	}
-
 	Mix_CloseAudio();
 	TTF_Quit();
 	SDL_Quit();
