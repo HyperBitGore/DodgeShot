@@ -26,6 +26,13 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 			spxp sp = NULL;
 			texp tp = NULL;
 			switch (etypes[curetype]) {
+			case -1:
+				curnload++;
+				prog = 0;
+				*spawning = false;
+				curetype++;
+				return;
+				break;
 			case 0:
 				sp = enem1head;
 				tp = enem1tex;
@@ -69,7 +76,7 @@ void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::
 			t++;
 			*t = nload[k];
 			t++;
-			n = 1;
+			n = 0;
 			k++;
 			if (k > nload.size() - 1) {
 				k = nload.size() - 1;
@@ -85,7 +92,7 @@ void Game::convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::
 	}
 	char kk[4];
 	int* r = (int*)kk;
-	*r = -1;
+	*r = '\\';
 	for (int i = 0; i < 4; i++) {
 		f << kk[i];
 	}
@@ -145,15 +152,11 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 	int ln = 0;
 	//this isnt right 
 	while (getline(f, line)) {
-		bool contains = false;
 		for (int i = 0; i < line.size(); i++) {
 			size++;
 			if (line[i] == '|') {
-				contains = true;
+				size += 4;
 			}
-		}
-		if (!contains) {
-			size += 2;
 		}
 		ln++;
 	}
@@ -177,28 +180,28 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 	f.close();
 	f.open(file);
 	int n = 0;
-	bool writeload = false;
 	int* t = (int*)data;
 	//-51 'Í'	char
 	//allocate more memory
-	while (*t != -1) {
-		if (writeload) {
-			nload.push_back(*t);
-			t++;
-			writeload = false;
-		}
+	while (*t != '\\') {
 		Point p;
 		switch (n) {
 		case 0:
-			etypes.push_back(*t);
-			t++;
+			if (*t > -1000) {
+				etypes.push_back(*t);
+				t++;
+			}
 			break;
 		case 1:
-			p.x = *t;
+			if (*t > -1000) {
+				p.x = *t;
+			}
 			t++;
 			break;
 		case 2:
-			p.y = *t;
+			if (*t > -1000) {
+				p.y = *t;
+			}
 			t++;
 			break;
 		}
@@ -207,14 +210,15 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 			spawnloc.push_back(p);
 			n = 0;
 			if (*t == 124) {
-				writeload = true;
+				t++;
+				nload.push_back(*t);
 				t++;
 			}
 		}
 	}
 	t++;
 	//Read transform data
-	while (*t != -1) {
+	while (*t != '\\') {
 		Transform i;
 		i.sx = *t;
 		t++;

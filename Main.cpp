@@ -14,9 +14,13 @@ texp enem2tex;
 spxp enem3head;
 texp enem3tex;
 
-//Level one done(background, all enemies in it, transforms, and boss)
+//Level one done prereqs(background, transforms, and boss)
+//Level one actually built out and tested
+//Check entire side of player so you can't clip through walls
+//Optimize enemies by only editing the pixels that need to be changed instead of remaking entire texture,
+//also change it to only add to destroyed vector when a that pixel is destroyed instead of map of entire texture
 //6 basic enemies(less if deem too much time)
-//5 levels(5 bosses) like classic STG shmups
+//3 levels(3 bosses) like classic STG shmups
 //Enemy that grows pixels back
 //Enemy that moves back and forth top of screen
 //Enemy that strafes you and tries to dodge bullets(could break this up into two different)
@@ -24,17 +28,137 @@ texp enem3tex;
 //First boss classic big guy that gives fast spreads
 //Second: A guy that moves around outer edge of screen, like a centipede kind've
 //Third: Small guy like you and dodges your attacks and sounds out hard to dodge patterns or tracking ones
-//Fourth: Tentacles from giant mass on top of screen(maybe stage is boss fight like R type level or mushi level)
-//Fifth: Two bosses at once
-//If i really need you to be able to deform level, maybe have list of possible deforms that frame and do a mass check
+
 
 //For having enemies with different angles just make new enemy type for loading and on load just change them to one useable
 //https://www.pinpng.com/picture/hhmbowh_bullet-hell-sprite-sheet-hd-png-download/, good reference for bullet sprites
-std::vector<int> etypes = { 1, 0, 0, 2, 0, 0, 0, 0,
-							0, 0, 0, 0, 0, 0, 0, 0 };
-std::vector<int> nload = { 8, 8};
-std::vector<Point> spawnloc = { {-100, 100}, {40, 10}, {60, 10}, {400, 10}, {120, 10}, {500 + 800, 200}, {300, 10}, {400, 10},
-								{20, 10}, {40, 10}, {60, 10}, {80, 10}, {120, 10}, {150, 10}, {300, 10}, {400, 10}};
+
+
+//Dont use 92 or 124
+std::vector<int> etypes = { 0, 0, 0,
+							0, 0, 0, 0, 0, 
+							-1,
+							-1,
+							-1,
+							0,
+							0, 0,
+							0,
+							0,
+							0,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							0, 0, 0, 0
+							-1,
+							-1,
+							-1,
+							0, 1, 0,
+							0,
+							-1,
+							-1,
+							-1,
+							1, 1,
+							-1,
+							-1,
+							-1,
+							-1,
+							0, 0, 0, 0,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							1,
+							-1,
+							0, 0, 0,
+							-1,
+							-1,
+							0, 0,
+							-1,
+							-1,
+							1,
+							-1,
+							-1,
+							0, 0, 0, 0
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							-1,
+							2,
+							-1,
+							-1,	
+							-1,
+							-1,
+							-1
+							,-1,};
+std::vector<int> nload = { 3, 5, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1,1,1,1,4,1,1,1,3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,
+	2,1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+std::vector<Point> spawnloc = { {-100, 100}, {300, 10}, {500, 10}, 
+								{910, 60}, {60, 10}, {-200, 200}, {200, 10}, {450, 10},
+								{450, 10},
+								{450, 10},
+								{450, 10},
+								{450, 10},
+								{920, 10} , {-300, 10}, 
+								{250, -10}, 
+								{550, 0}, 
+								{50, 0},
+								{50, 0}, 
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{-500, 200}, {405, 0}, {1200, 300}, {200, 0},
+								{50, 0}, 
+								{50, 0}, 
+								{50, 0}, 
+								{-400, 100}, {405, 0}, {1200, 100}, 
+								{50, 0}, 
+								{50, 0}, 
+								{50, 0}, 
+								{-300, 150}, {1100, 200}, 
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{-100, 50},{400, 0},{300, 0},{1000, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{350, 0},
+								{50, 0},
+								{119, 0}, {-305, 138}, {298, 0},
+								{50, 0},
+								{50, 0},
+								{150, 0}, {450, 0},
+								{50, 0},
+								{50, 0},
+								{365, 0}, 
+								{50, 0},
+								{50, 0},
+								{150, 0},{205, 0},{385, 0},{480, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{300, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0},
+								{50, 0}, 
+								{50, 0}, };
 
 
 int main() {
@@ -46,7 +170,7 @@ int main() {
 	if (!TTF_Init()) {
 		std::cout << "Font failure" << std::endl;
 	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 4, 2048) < 0) {
 		std::cout << "Mix failure" << std::endl;
 	}
 	TTF_Font* font16 = TTF_OpenFont("DelaGothicOne-Regular.ttf", 16);
@@ -58,44 +182,168 @@ int main() {
 	SDL_Event e;
 	texp text16 = NULL;
 	game.constructAlphabet(rend, font16, { 198, 150, 40 }, text16);
-
+	Uint32 black = gore.ConvertColorToUint32({ 0, 0, 0, 0 }, surf->format);
 	Uint32 wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
 
 	std::vector<Transform> transforms;
 	Transform trans;
-	trans.activate = 4000;
+	trans.activate = 8000;
 	trans.sx = 10;
-	trans.sy = 100;
-	trans.speed = 0.05;
+	trans.sy = 400;
+	trans.speed = 0.04;
 	trans.endx = 790;
-	trans.endy = 100;
+	trans.endy = 400;
 	trans.cx = 10;
-	trans.cy = 100;
+	trans.cy = 400;
 	trans.ct = 0;
 	trans.col = wallcolor;
 	transforms.push_back(trans);
 	trans.activate = 8000;
 	trans.sx = 10;
-	trans.sy = 99;
+	trans.sy = 399;
 	trans.speed = 0.03;
 	trans.endx = 790;
-	trans.endy = 99;
+	trans.endy = 399;
 	trans.cx = 10;
-	trans.cy = 99;
+	trans.cy = 399;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 8000;
+	trans.sx = 10;
+	trans.sy = 401;
+	trans.speed = 0.01;
+	trans.endx = 790;
+	trans.endy = 401;
+	trans.cx = 10;
+	trans.cy = 401;
 	trans.ct = 0;
 	trans.col = wallcolor;
 	transforms.push_back(trans);
 	trans.activate = 50000;
-	trans.sx = 790;
-	trans.sy = 99;
+	trans.sx = 789;
+	trans.sy = 400;
 	trans.speed = 0.03;
 	trans.endx = 10;
-	trans.endy = 99;
-	trans.cx = 790;
-	trans.cy = 99;
+	trans.endy = 400;
+	trans.cx = 789;
+	trans.cy = 400;
 	trans.ct = 0;
-	trans.col = gore.ConvertColorToUint32({ 0, 0, 0, 0 }, surf->format);
+	trans.col = 0;
 	transforms.push_back(trans);
+	trans.activate = 50000;
+	trans.sx = 789;
+	trans.sy = 401;
+	trans.speed = 0.05;
+	trans.endx = 10;
+	trans.endy = 401;
+	trans.cx = 789;
+	trans.cy = 401;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 50000;
+	trans.sx = 789;
+	trans.sy = 399;
+	trans.speed = 0.01;
+	trans.endx = 10;
+	trans.endy = 399;
+	trans.cx = 789;
+	trans.cy = 399;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	//for after the line 99 wave
+	trans.activate = 62000;
+	trans.sx = 10;
+	trans.sy = 600;
+	trans.speed = 0.01;
+	trans.endx = 790;
+	trans.endy = 600;
+	trans.cx = 10;
+	trans.cy = 600;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 62000;
+	trans.sx = 10;
+	trans.sy = 601;
+	trans.speed = 0.02;
+	trans.endx = 790;
+	trans.endy = 601;
+	trans.cx = 10;
+	trans.cy = 601;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 62000;
+	trans.sx = 10;
+	trans.sy = 599;
+	trans.speed = 0.04;
+	trans.endx = 790;
+	trans.endy = 599;
+	trans.cx = 10;
+	trans.cy = 599;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 70000;
+	trans.sx = 50;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 50;
+	trans.endy = 780;
+	trans.cx = 50;
+	trans.cy = 20;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 70000;
+	trans.sx = 600;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 600;
+	trans.endy = 780;
+	trans.cx = 600;
+	trans.cy = 20;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 90000;
+	trans.sx = 400;
+	trans.sy = 10;
+	trans.speed = 0.01;
+	trans.endx = 400;
+	trans.endy = 780;
+	trans.cx = 400;
+	trans.cy = 20;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	trans.activate = 110000;
+	trans.sx = 400;
+	trans.sy = 100;
+	trans.speed = 0.01;
+	trans.endx = 400;
+	trans.endy = 500;
+	trans.cx = 400;
+	trans.cy = 100;
+	trans.ct = 0;
+	trans.col = 0;
+	transforms.push_back(trans);
+	trans.activate = 125000;
+	trans.sx = 20;
+	trans.sy = 285;
+	trans.speed = 0.01;
+	trans.endx = 600;
+	trans.endy = 285;
+	trans.cx = 20;
+	trans.cy = 285;
+	trans.ct = 0;
+	trans.col = wallcolor;
+	transforms.push_back(trans);
+	std::cout << spawnloc.size() << " : " << etypes.size() << std::endl;
+	std::cout << nload.size() << std::endl;
 	game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
 	game.loadLevel(etypes, nload, spawnloc, transforms, "level.lvl");
 
@@ -154,6 +402,8 @@ int main() {
 	//gore.SetPixelTexture(walls, &ty, &tx, &wallcolor, &wallpitch);
 
 	Mix_Chunk* grazesound = Mix_LoadWAV("Sprites/graze.wav");
+	Mix_Chunk* ehitsound = Mix_LoadWAV("Sprites/ehit.wav");
+	Mix_Chunk* edeathsound = Mix_LoadWAV("Sprites/edeath.wav");
 
 	Entity player = { 400, 400, 15, 20 };
 	player.health = 50;
@@ -400,44 +650,44 @@ int main() {
 
 		bool rebuiltal = false;
 		int cn = 0;
-		for (auto& i : enemies) {
+		for (int i = 0; i < enemies.size();) {
 			bool er = false;
 			bool skipmove = false;
-			i.shootimer += delta;
-			i.movetimer += delta;
-			i.animtimer += delta;
-			i.ptime += delta;
-			if (i.pause) {
-				if (i.ptime > i.maxp && i.y < 670) {
-					i.shootmax = i.burstspeed;
+			enemies[i].shootimer += delta;
+			enemies[i].movetimer += delta;
+			enemies[i].animtimer += delta;
+			enemies[i].ptime += delta;
+			if (enemies[i].pause) {
+				if (enemies[i].ptime > enemies[i].maxp && enemies[i].y < 670) {
+					enemies[i].shootmax = enemies[i].burstspeed;
 					skipmove = true;
 				}
 			}
-			if (i.movetimer > i.timermax) {
-				if (i.offscreen < 3) {
-					switch (i.offscreen) {
+			if (enemies[i].movetimer > enemies[i].timermax) {
+				if (enemies[i].offscreen < 3) {
+					switch (enemies[i].offscreen) {
 					case 0:
-						if (i.x < i.tgx) {
-							i.x += 250 * delta;
+						if (enemies[i].x < enemies[i].tgx) {
+							enemies[i].x += 250 * delta;
 						}
 						else {
-							i.offscreen = 3;
+							enemies[i].offscreen = 3;
 						}
 						break;
 					case 1:
-						if (i.x > i.tgx) {
-							i.x -= 250 * delta;
+						if (enemies[i].x > enemies[i].tgx) {
+							enemies[i].x -= 250 * delta;
 						}
 						else {
-							i.offscreen = 3;
+							enemies[i].offscreen = 3;
 						}
 						break;
 					case 2:
-						if (i.y < 20) {
-							i.y += 250 * delta;
+						if (enemies[i].y < 20) {
+							enemies[i].y += 250 * delta;
 						}
 						else {
-							i.offscreen = 3;
+							enemies[i].offscreen = 3;
 						}
 						break;
 					}
@@ -445,117 +695,125 @@ int main() {
 				}
 				else {
 					if (!skipmove) {
-						i.x += i.trajx;
-						i.y += i.trajy;
+						enemies[i].x += enemies[i].trajx;
+						enemies[i].y += enemies[i].trajy;
 					}
-					i.movetimer = 0;
+					enemies[i].movetimer = 0;
 				}
 			}
 
-			if (i.shootimer > i.shootmax && i.y < 670) {
+			if (enemies[i].shootimer > enemies[i].shootmax && enemies[i].y < 670) {
 				float angle;
-				switch (i.type) {
+				switch (enemies[i].type) {
 				case 0:
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 90, 0.006, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.008, 0, ebullet1tex));
 					break;
 				case 1:
-					angle = std::atan2f((player.y - 15) - i.y, (player.x - 15) - i.x) * 180.0/M_PI;
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, angle, 0.004, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 15) - i.y, (player.x - 10) - i.x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((i.x + (i.w >> 1) + 5), i.y + (i.h >> 1), 10, 10, angle, 0.004, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 10) - i.y, (player.x - 10) - i.x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((i.x + (i.w >> 1)), i.y + 5 + (i.h >> 1), 10, 10, angle, 0.004, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 5) - i.y, (player.x - 10) - i.x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((i.x + (i.w >> 1)), i.y + 5 + (i.h >> 1), 10, 10, angle, 0.004, 0, ebullet1tex));
-					angle = std::atan2f((player.y - 10) - i.y, (player.x - 5) - i.x) * 180.0 / M_PI;
-					bullets.push_back(game.createBullet((i.x + (i.w >> 1)), i.y + 5 + (i.h >> 1), 10, 10, angle, 0.004, 0, ebullet1tex));
-					i.pburst++;
-					if (i.pburst > i.pmax) {
-						i.ptime = 0;
-						i.pburst = 0;
-						i.shootmax = i.origshotspeed;
+					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0/M_PI;
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1) + 5), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 5) - enemies[i].y, (player.x - 10) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 10) - enemies[i].y, (player.x - 5) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet((enemies[i].x + (enemies[i].w >> 1)), enemies[i].y + 5 + (enemies[i].h >> 1), 10, 10, angle, 0.006, 0, ebullet1tex));
+					enemies[i].pburst++;
+					if (enemies[i].pburst > enemies[i].pmax) {
+						enemies[i].ptime = 0;
+						enemies[i].pburst = 0;
+						enemies[i].shootmax = enemies[i].origshotspeed;
 					}
 					break;
 				case 2:
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 75, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 70, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 105, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 100, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 95, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 85, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1), 10, 10, 90, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1) - 10, 10, 10, 90, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1) - 20, 10, 10, 90, 0.003, 0, ebullet1tex));
-					bullets.push_back(game.createBullet(i.x + (i.w >> 1), i.y + (i.h >> 1) - 30, 10, 10, 90, 0.003, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 75, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 70, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 105, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 100, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 95, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, 85, 0.005, 0, ebullet1tex));
+					angle = std::atan2f((player.y - 15) - enemies[i].y, (player.x - 15) - enemies[i].x) * 180.0 / M_PI;
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 10, 10, 10, angle, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 20, 10, 10, angle, 0.005, 0, ebullet1tex));
+					bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1) - 30, 10, 10, angle, 0.005, 0, ebullet1tex));
 					break;
 				}
-				i.shootimer = 0;
+				enemies[i].shootimer = 0;
 			}
-			if (i.animtimer > i.animmax) {
-				i.sprites = i.sprites->next;
-				i.texs = i.texs->next;
-				if (i.sprites == NULL) {
-					i.sprites = i.start;
-					i.texs = i.tstart;
+			if (enemies[i].animtimer > enemies[i].animmax) {
+				enemies[i].sprites = enemies[i].sprites->next;
+				enemies[i].texs = enemies[i].texs->next;
+				if (enemies[i].sprites == NULL) {
+					enemies[i].sprites = enemies[i].start;
+					enemies[i].texs = enemies[i].tstart;
 				}
-				i.change = true;
-				i.animtimer = 0;
+				enemies[i].change = true;
+				enemies[i].animtimer = 0;
 			}
-			if (i.change && !rebuiltal) {
+			if (enemies[i].change && !rebuiltal) {
 				bool dest = false;
 				int n = 1;
-				for (auto& j : i.destroycheck) {
-					if (i.points[j.y][j.x]) {
+				for (auto& j : enemies[i].destroycheck) {
+					if (enemies[i].points[j.y][j.x]) {
 						n++;
 					}
 				}
-				if (n >= i.destn) {
+				if (n >= enemies[i].destn) {
 					dest = true;
 				}
 				if (!dest) {
-					gore.clearSurface(i.surf);
-					SDL_DestroyTexture(i.tex);
-					for (int h = 0; h < i.h; h++) {
-						for (int w = 0; w < i.w; w++) {
-							if (!i.points[h][w]) {
-								Uint32 col = gore.GetPixelSurface(i.sprites->current, &h, &w);
-								gore.SetPixelSurface(i.surf, &h, &w, &col);
+					gore.clearSurface(enemies[i].surf);
+					SDL_DestroyTexture(enemies[i].tex);
+					for (int h = 0; h < enemies[i].h; h++) {
+						for (int w = 0; w < enemies[i].w; w++) {
+							if (!enemies[i].points[h][w]) {
+								Uint32 col = gore.GetPixelSurface(enemies[i].sprites->current, &h, &w);
+								gore.SetPixelSurface(enemies[i].surf, &h, &w, &col);
 							}
 						}
 					}
-					i.tex = SDL_CreateTextureFromSurface(rend, i.surf);
-					i.change = false;
+					enemies[i].tex = SDL_CreateTextureFromSurface(rend, enemies[i].surf);
+					enemies[i].change = false;
 					rebuiltal = true;
 				}
 				else {
 					er = true;
 				}
 			}
-			SDL_Rect rect = { i.x, i.y, i.w, i.h };
-			SDL_RenderCopy(rend, i.tex , NULL, &rect);
-			if (i.y > 800) {
-				SDL_FreeSurface(i.surf);
-				SDL_DestroyTexture(i.tex);
+			SDL_Rect rect = { enemies[i].x, enemies[i].y, enemies[i].w, enemies[i].h };
+			SDL_RenderCopy(rend, enemies[i].tex , NULL, &rect);
+			if (enemies[i].y > 800) {
+				SDL_FreeSurface(enemies[i].surf);
+				SDL_DestroyTexture(enemies[i].tex);
 				enemies.erase(enemies.begin() + cn);
 			}
 			if (er) {
-				switch (i.type) {
+				switch (enemies[i].type) {
 				case 0:
 					score += 1000;
 					break;
+				case 1:
+					score += 5000;
+					break;
+				case 2:
+					score += 20000;
+					break;
 				}
 				//explosion particle creation
-				for (int h = 0; h < i.h; h++) {
-					for (int w = 0; w < i.w; w++) {
-						if (!i.points[h][w]) {
+				for (int h = 0; h < enemies[i].h; h++) {
+					for (int w = 0; w < enemies[i].w; w++) {
+						if (!enemies[i].points[h][w]) {
 							Particle p;
-							p.x = i.x + w + 1;
-							p.y = i.y + h + 1;
+							p.x = enemies[i].x + w + 1;
+							p.y = enemies[i].y + h + 1;
 							p.rect = { (int)p.x, (int)p.y, 1, 1 };
 							p.pd = { w, h, 1, 1 };
 							p.trajtimer = 0;
 							p.timermax = 0.007;
-							p.tex = i.texs->current;
+							p.tex = enemies[i].texs->current;
 							//p.col = gore.GetPixelSurface(i.sprites->current, &h, &w);
 							p.trajx = game.trajX(rand() % 358);
 							p.trajy = game.trajY(rand() % 358);
@@ -567,8 +825,8 @@ int main() {
 							int roll = rand() % 100;
 							if (roll > 90) {
 								Particle b;
-								b.x = i.x + w + 1;
-								b.y = i.y + h + 1;
+								b.x = enemies[i].x + w + 1;
+								b.y = enemies[i].y + h + 1;
 								int pw = rand() % 10 + 5;
 								int ph = rand() % 10 + 3;
 								b.rect = { (int)b.x, (int)b.y, pw, ph };
@@ -591,64 +849,65 @@ int main() {
 						}
 					}
 				}
-				SDL_FreeSurface(i.surf);
-				SDL_DestroyTexture(i.tex);
-				enemies.erase(enemies.begin() + cn);
+				SDL_FreeSurface(enemies[i].surf);
+				SDL_DestroyTexture(enemies[i].tex);
+				enemies.erase(enemies.begin() + i);
+				Mix_PlayChannel(1, edeathsound, 0);
 			}
 			else {
-				cn++;
+				i++;
 			}
 		}
-		n = 0;
 		cgr = false;
-		for (auto& i : bullets) {
-			i.trajtimer += delta;
-			if (i.trajtimer > i.timermax) {
-				i.x += i.trajx;
-				i.y += i.trajy;
-				i.trajtimer = 0;
+		for (int i = 0; i < bullets.size();) {
+			bullets[i].trajtimer += delta;
+			if (bullets[i].trajtimer > bullets[i].timermax) {
+				bullets[i].x += bullets[i].trajx;
+				bullets[i].y += bullets[i].trajy;
+				bullets[i].trajtimer = 0;
 			}
-			switch (i.type) {
+			switch (bullets[i].type) {
 			case 0:
-				if (game.isColliding(i, graze)) {
-					if (game.isColliding(i, player)) {
+				if (game.isColliding(bullets[i], graze)) {
+					if (game.isColliding(bullets[i], player)) {
 						player.health--;
-						i.x = -30;
+						bullets[i].x = -30;
 					}
 					else {
 						score++;
 						cgr = true;
-						//bx = i.x;
-						//bang = std::atan2f((player.y - i.y), (i.x - player.x));
+						//bx = bullets[i].x;
+						//bang = std::atan2f((player.y - bullets[i].y), (bullets[i].x - player.x));
 					}
 				}
 				break;
 			case 1:
 				//Check collision with enemy and delete pixel it's colliding with
 				for (auto& j : enemies) {
-					if (game.isColliding(i, j)) {
+					if (game.isColliding(bullets[i], j)) {
 						int cx = 0;
 						int cy = 0;
-						if (i.x > j.x) { cx = i.x - j.x; }
-						else { cx = j.x - i.x; }
-						if (i.y > j.y) { cy = i.y - j.y; }
-						else { cy = j.y - i.y; }
+						if (bullets[i].x > j.x) { cx = bullets[i].x - j.x; }
+						else { cx = j.x - bullets[i].x; }
+						if (bullets[i].y > j.y) { cy = bullets[i].y - j.y; }
+						else { cy = j.y - bullets[i].y; }
 						if (!j.points[cy][cx]) {
 							j.points[cy][cx] = true;
 							j.change = true;
-							i.x = -30;
+							Mix_PlayChannel(0, ehitsound, 0);
+							bullets[i].x = -30;
 						}
 					}
 				}
 				break;
 			}
-			SDL_Rect rect = { i.x, i.y, i.w, i.h };
-			SDL_RenderCopy(rend, i.tex, NULL, &rect);
-			if (i.x < 0 || i.x > 800 || i.y < 0 || i.y > 800) {
-				bullets.erase(bullets.begin() + n);
+			SDL_Rect rect = { bullets[i].x, bullets[i].y, bullets[i].w, bullets[i].h };
+			SDL_RenderCopy(rend, bullets[i].tex, NULL, &rect);
+			if (bullets[i].x < 0 || bullets[i].x > 800 || bullets[i].y < 0 || bullets[i].y > 800) {
+				bullets.erase(bullets.begin() + i);
 			}
 			else {
-				n++;
+				i++;
 			}
 		}
 
@@ -666,7 +925,7 @@ int main() {
 				grtimer = 0;
 			}
 			if (grstimer > 0.06) {
-				Mix_PlayChannel(-1, grazesound, 0);
+				Mix_PlayChannel(2, grazesound, 0);
 				grstimer = 0;
 			}
 			SDL_Rect rect = { player.x - 20, player.y - 20, 60, 60 };
