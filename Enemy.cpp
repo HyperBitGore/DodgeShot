@@ -53,6 +53,7 @@ void Game::createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemie
 		temp.destn = temp.destroycheck.size()/2;
 		temp.w = 100;
 		temp.h = 100;
+		temp.points = e3points;
 		break;
 	case 1:
 		//enemy will pause in place and then shoot a couple bursts at you
@@ -71,6 +72,7 @@ void Game::createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemie
 		temp.destn = 20;
 		temp.w = 50;
 		temp.h = 60;
+		temp.points = e2points;
 		break;
 	default:
 		temp.pause = false;
@@ -82,6 +84,7 @@ void Game::createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemie
 		temp.destn = 5;
 		temp.w = 30;
 		temp.h = 50;
+		temp.points = e1points;
 		break;
 	}
 	temp.type = type;
@@ -89,20 +92,35 @@ void Game::createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemie
 	temp.surf = SDL_CreateRGBSurfaceWithFormat(0, temp.w, temp.h, 32, SDL_PIXELFORMAT_RGBA8888);
 	temp.tex = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, temp.w, temp.h);
 	SDL_SetTextureBlendMode(temp.tex, SDL_BLENDMODE_BLEND);
+	std::vector<Point> pointss;
+	std::vector<Uint32> colors;
 	for (int i = 0; i < temp.h; i++) {
-		std::vector<bool> c;
+		//std::vector<bool> c;
 		for (int j = 0; j < temp.w; j++) {
 			Uint32 col = gore.GetPixelSurface(temp.sprites->current, &i, &j);
+			colors.push_back(col);
+			pointss.push_back({ j, i });
 			//if (col > 255) {
-				gore.SetPixelTexture(temp.tex, &i, &j, &col, &temp.surf->pitch);
-				c.push_back(false);
+				//gore.SetPixelTexture(temp.tex, &i, &j, &col, &temp.surf->pitch);
+				//c.push_back(false);
 			//}
 			//else {
 				//col = 0;
 				//c.push_back(true);
 			//}
 		}
-		temp.points.push_back(c);
+		//temp.points.push_back(c);
 	}
+	MassTextureSet(temp.tex, pointss, colors, &temp.surf->pitch);
 	enemies.push_back(temp);
+}
+
+
+void Game::generateDestroyChecks(std::vector<Point>& dest, int sx, int sy, int endx, int endy) {
+	for (int i = sy; i < endy; i++) {
+		for (int j = sx; j < endx; j++) {
+			dest.push_back({ j, i });
+		}
+	}
+	
 }

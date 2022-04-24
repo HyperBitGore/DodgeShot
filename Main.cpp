@@ -18,10 +18,16 @@ spxp boss1head;
 
 SDL_Texture* ebullet1tex;
 
+
+std::vector<std::vector<bool>> e1points;
+std::vector<std::vector<bool>> e2points;
+std::vector<std::vector<bool>> e3points;
+
+Uint32 wallcolor;
+
 //Level one done prereqs(background, boss(will slowly box you in with smaller and smaller boxes))
 //Level one actually built out and tested
 //Death condition
-//Make enemy point maps on startup and just copy them when a new enemy is made
 //6 basic enemies(less if deem too much time)
 //3 levels(3 bosses) like classic STG shmups
 //Enemy that grows pixels back
@@ -38,168 +44,9 @@ SDL_Texture* ebullet1tex;
 
 
 //Dont use 92 or 124
-std::vector<int> etypes = { 0, 0, 0,
-							0, 0, 0, 0, 0, 
-							-1,
-							-1,
-							-1,
-							0,
-							0, 0,
-							0,
-							0,
-							0,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							0, 0, 0, 0
-							-1,
-							-1,
-							-1,
-							0, 1, 0,
-							0,
-							-1,
-							-1,
-							-1,
-							1, 0,
-							-1,
-							-1,
-							-1,
-							-1,
-							0, 0, 0, 0,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							1,
-							-1,
-							0, 0, 0,
-							-1,
-							-1,
-							0, 0,
-							-1,
-							-1,
-							1,
-							-1,
-							-1,
-							0, 0, 0, 0
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							2,
-							-1,
-							-1,	
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							1, 1,
-							0, 0, 0,
-							-1,
-							-1,
-							-1,
-							-1,
-							-1,
-							0, 0,
-							-1
-							,-1,};
-std::vector<int> nload = { 3, 5, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1,1,1,1,4,1,1,1,3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,
-	2,1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1};
-std::vector<Point> spawnloc = { {-100, 100}, {300, 10}, {500, 10}, 
-								{910, 60}, {60, 10}, {-200, 200}, {200, 10}, {450, 10},
-								{450, 10},
-								{450, 10},
-								{450, 10},
-								{450, 10},
-								{920, 10} , {-300, 10}, 
-								{250, -10}, 
-								{550, 0}, 
-								{50, 0},
-								{50, 0}, 
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{-500, 200}, {405, 0}, {1200, 300}, {200, 0},
-								{50, 0}, 
-								{50, 0}, 
-								{50, 0}, 
-								{-400, 100}, {550, 0}, {1200, 100}, 
-								{50, 0}, 
-								{50, 0}, 
-								{50, 0}, 
-								{-300, 150}, {1100, 200}, 
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{-100, 50},{400, 0},{300, 0},{1000, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{350, 0},
-								{50, 0},
-								{119, 0}, {-305, 138}, {298, 0},
-								{50, 0},
-								{50, 0},
-								{150, 0}, {450, 0},
-								{50, 0},
-								{50, 0},
-								{365, 0}, 
-								{50, 0},
-								{50, 0},
-								{150, 0},{205, 0},{385, 0},{480, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{300, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0}, 
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{250, -10},{450, -10},
-								{-250, 150},{1100, 100},{-400, 100},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{50, 0},
-								{300, 0},{505, 0},
-								{50, 0},
-								{50, 0}, };
+std::vector<int> etypes = {};
+std::vector<int> nload = { };
+std::vector<Point> spawnloc = { };
 
 
 int main() {
@@ -224,10 +71,10 @@ int main() {
 	texp text16 = NULL;
 	game.constructAlphabet(rend, font16, { 198, 150, 40 }, text16);
 	Uint32 black = gore.ConvertColorToUint32({ 0, 0, 0, 0 }, surf->format);
-	Uint32 wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
+	wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
 
 	std::vector<Transform> transforms;
-	Transform trans;
+	/*Transform trans;
 	trans.activate = 8000;
 	trans.sx = 10;
 	trans.sy = 400;
@@ -238,231 +85,13 @@ int main() {
 	trans.cy = 400;
 	trans.ct = 0;
 	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 8000;
-	trans.sx = 10;
-	trans.sy = 399;
-	trans.speed = 0.03;
-	trans.endx = 790;
-	trans.endy = 399;
-	trans.cx = 10;
-	trans.cy = 399;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 8000;
-	trans.sx = 10;
-	trans.sy = 401;
-	trans.speed = 0.01;
-	trans.endx = 790;
-	trans.endy = 401;
-	trans.cx = 10;
-	trans.cy = 401;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 50000;
-	trans.sx = 789;
-	trans.sy = 400;
-	trans.speed = 0.03;
-	trans.endx = 10;
-	trans.endy = 400;
-	trans.cx = 789;
-	trans.cy = 400;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 50000;
-	trans.sx = 789;
-	trans.sy = 401;
-	trans.speed = 0.05;
-	trans.endx = 10;
-	trans.endy = 401;
-	trans.cx = 789;
-	trans.cy = 401;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 50000;
-	trans.sx = 789;
-	trans.sy = 399;
-	trans.speed = 0.01;
-	trans.endx = 10;
-	trans.endy = 399;
-	trans.cx = 789;
-	trans.cy = 399;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 62000;
-	trans.sx = 10;
-	trans.sy = 600;
-	trans.speed = 0.01;
-	trans.endx = 790;
-	trans.endy = 600;
-	trans.cx = 10;
-	trans.cy = 600;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 62000;
-	trans.sx = 10;
-	trans.sy = 601;
-	trans.speed = 0.02;
-	trans.endx = 790;
-	trans.endy = 601;
-	trans.cx = 10;
-	trans.cy = 601;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 62000;
-	trans.sx = 10;
-	trans.sy = 599;
-	trans.speed = 0.04;
-	trans.endx = 790;
-	trans.endy = 599;
-	trans.cx = 10;
-	trans.cy = 599;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 70000;
-	trans.sx = 50;
-	trans.sy = 10;
-	trans.speed = 0.01;
-	trans.endx = 50;
-	trans.endy = 780;
-	trans.cx = 50;
-	trans.cy = 20;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 70000;
-	trans.sx = 600;
-	trans.sy = 20;
-	trans.speed = 0.01;
-	trans.endx = 600;
-	trans.endy = 780;
-	trans.cx = 600;
-	trans.cy = 20;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 90000;
-	trans.sx = 400;
-	trans.sy = 10;
-	trans.speed = 0.01;
-	trans.endx = 400;
-	trans.endy = 780;
-	trans.cx = 400;
-	trans.cy = 20;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 110000;
-	trans.sx = 400;
-	trans.sy = 100;
-	trans.speed = 0.01;
-	trans.endx = 400;
-	trans.endy = 500;
-	trans.cx = 400;
-	trans.cy = 100;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 125000;
-	trans.sx = 20;
-	trans.sy = 285;
-	trans.speed = 0.01;
-	trans.endx = 600;
-	trans.endy = 285;
-	trans.cx = 20;
-	trans.cy = 285;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);
-	trans.activate = 150000;
-	trans.sx = 600;
-	trans.sy = 285;
-	trans.speed = 0.01;
-	trans.endx = 20;
-	trans.endy = 285;
-	trans.cx = 600;
-	trans.cy = 285;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 150000;
-	trans.sx = 400;
-	trans.sy = 10;
-	trans.speed = 0.01;
-	trans.endx = 400;
-	trans.endy = 780;
-	trans.cx = 400;
-	trans.cy = 10;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 155000;
-	trans.sx = 50;
-	trans.sy = 10;
-	trans.speed = 0.01;
-	trans.endx = 50;
-	trans.endy = 780;
-	trans.cx = 50;
-	trans.cy = 10;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 155000;
-	trans.sx = 600;
-	trans.sy = 10;
-	trans.speed = 0.01;
-	trans.endx = 600;
-	trans.endy = 780;
-	trans.cx = 600;
-	trans.cy = 10;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 160000;
-	trans.sx = 21;
-	trans.sy = 600;
-	trans.speed = 0.01;
-	trans.endx = 780;
-	trans.endy = 600;
-	trans.cx = 21;
-	trans.cy = 600;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 160000;
-	trans.sx = 21;
-	trans.sy = 601;
-	trans.speed = 0.01;
-	trans.endx = 780;
-	trans.endy = 601;
-	trans.cx = 21;
-	trans.cy = 601;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
-	trans.activate = 160000;
-	trans.sx = 21;
-	trans.sy = 599;
-	trans.speed = 0.01;
-	trans.endx = 780;
-	trans.endy = 599;
-	trans.cx = 21;
-	trans.cy = 599;
-	trans.ct = 0;
-	trans.col = 0;
-	transforms.push_back(trans);
+	transforms.push_back(trans);*/
+	
+
 	std::cout << spawnloc.size() << " : " << etypes.size() << std::endl;
 	std::cout << nload.size() << std::endl;
-	game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
-	game.loadLevel(etypes, nload, spawnloc, transforms, "level.lvl");
+	//game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
+	//game.loadLevel(etypes, nload, spawnloc, transforms, "level.lvl");
 
 	enem1head = gore.loadSpriteList({ "enem1_3.png", "enem1_2.png", "enem1_1.png" }, { 30, 30, 30 }, {50, 50, 50},
 	SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
@@ -478,6 +107,8 @@ int main() {
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 
 	boss1head = gore.loadSpriteList({ "boss1.png" }, { 200 }, {200}, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+
+	game.createEnemyPoints();
 
 	texp playertex = gore.loadTextureList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 	spxp playersprites = gore.loadSpriteList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
@@ -528,7 +159,7 @@ int main() {
 	Mix_Chunk* edeathsound = Mix_LoadWAV("Sprites/edeath.wav");
 	Mix_Chunk* phitsound = Mix_LoadWAV("Sprites/pdamage.wav");
 
-	Entity player = { 400, 400, 5, 5 };
+	Entity player = { 400, 400, 1, 1 };
 	player.health = 50;
 	texp pbegin = playertex;
 	Entity graze = { 400, 400, 50, 50 };
@@ -570,7 +201,7 @@ int main() {
 	double ctime = 0;
 	double lvltime = 0;
 	game.loadBoss(&boss, level, rend);
-	//bossmode = true;
+	bossmode = true;
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -1063,7 +694,10 @@ int main() {
 			}
 		}
 		if (bossmode) {
-			game.bossUpdate(&boss, rend, delta, bullets, &player);
+			SDL_SetRenderDrawColor(rend, 180, 50, 150, 0);
+			SDL_Rect herect = { 10, 770, boss.health * 2, 20 };
+			SDL_RenderFillRect(rend, &herect);
+			game.bossUpdate(&boss, rend, delta, bullets, &player, transforms);
 		}
 		cgr = false;
 		for (int i = 0; i < bullets.size();) {

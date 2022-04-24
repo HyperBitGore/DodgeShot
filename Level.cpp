@@ -38,7 +38,7 @@ bool Game::MassTextureCheck(SDL_Texture* tex, int sy, int sx, int endx, int endy
 }
 
 void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning, bool* bossmode) {
-	if (curnload <= nload.size() - 1) {
+	if (curnload <= nload.size() - 1 && !bossmode) {
 		bool oneframe = false;
 		for (int i = prog; i < nload[curnload]; i++, curetype++, oneframe = true) {
 			if (oneframe) {
@@ -268,4 +268,33 @@ void Game::loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vec
 
 	f.close();
 	std::free(data);
+}
+
+
+void Game::createEnemyPoints() {
+	//e1
+	for (int i = 0; i < 50; i++) {
+		std::vector<bool> c;
+		for (int j = 0; j < 30; j++) {
+			c.push_back(false);
+		}
+		e1points.push_back(c);
+	}
+	//e2
+	for (int i = 0; i < 60; i++) {
+		std::vector<bool> c;
+		for (int j = 0; j < 50; j++) {
+			c.push_back(false);
+		}
+		e2points.push_back(c);
+	}
+	//e3
+	for (int i = 0; i < 100; i++) {
+		std::vector<bool> c;
+		for (int j = 0; j < 100; j++) {
+			c.push_back(false);
+		}
+		e3points.push_back(c);
+	}
+
 }

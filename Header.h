@@ -19,6 +19,12 @@ extern spxp boss1head;
 
 extern SDL_Texture* ebullet1tex;
 
+extern std::vector<std::vector<bool>> e1points;
+extern std::vector<std::vector<bool>> e2points;
+extern std::vector<std::vector<bool>> e3points;
+
+extern Uint32 wallcolor;
+
 class Timer {
 private:
 	std::chrono::time_point<std::chrono::steady_clock> start;
@@ -98,11 +104,30 @@ struct Particle : Bullet {
 	Uint32 col;
 	bool er;
 };
+
+struct Transform {
+	int sx;
+	int sy;
+	int endx;
+	int endy;
+	int cx;
+	int cy;
+	double activate;
+	double speed;
+	float ct;
+	Uint32 col;
+};
+//Erase when used, or else will continually activate
+struct TRActivate {
+	Transform trans;
+	int health;
+};
 struct Boss : Entity {
 	int type;
 	int pattern;
 	int phase;
 	int burst;
+	int maxhealth;
 	float trajx;
 	float trajy;
 	float movetime;
@@ -116,19 +141,10 @@ struct Boss : Entity {
 	spxp sprites;
 	std::vector<Point> destroyed;
 	std::vector<std::vector<bool>> points;
-};
-
-struct Transform {
-	int sx;
-	int sy;
-	int endx;
-	int endy;
-	int cx;
-	int cy;
-	double activate;
-	double speed;
-	float ct;
-	Uint32 col;
+	bool opposite;
+	bool oppositex;
+	std::vector<Point> destroychecks;
+	std::vector<TRActivate> activates;
 };
 
 
@@ -160,17 +176,21 @@ public:
 	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
 	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
 	
+	void generateDestroyChecks(std::vector<Point>& dest, int sx, int sy, int endx, int endy);
 	void createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemies, int x, int y, int type, float degree, SDL_Renderer* rend);
 
 	void convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
 	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
 	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool* spawning, bool* bossmode);
+	void createEnemyPoints();
+
 	void MassTextureSet(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
 	bool MassTextureCheck(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
 	void MassTextureSet(SDL_Texture* tex, std::vector<Point> points, std::vector<Uint32>colors, int* pitch);
 
+	void regrow(std::vector<Point> points, SDL_Texture* tex, SDL_Surface* surf, std::vector<std::vector<bool>>& dest);
 	void loadBoss(Boss* boss, int level, SDL_Renderer* rend);
-	void bossUpdate(Boss* boss, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p);
+	void bossUpdate(Boss* boss, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p, std::vector<Transform>& transforms);
 
 };
 
