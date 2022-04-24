@@ -14,9 +14,12 @@ texp enem2tex;
 spxp enem3head;
 texp enem3tex;
 
+spxp boss1head;
+
+SDL_Texture* ebullet1tex;
+
 //Level one done prereqs(background, boss(will slowly box you in with smaller and smaller boxes))
 //Level one actually built out and tested
-//Effect and sound for when taking damage
 //Death condition
 //Make enemy point maps on startup and just copy them when a new enemy is made
 //6 basic enemies(less if deem too much time)
@@ -474,6 +477,8 @@ int main() {
 	enem3tex = gore.loadTextureList({ "enem3_2.png", "enem3_1.png" }, { 100, 100, 100 }, { 100, 100, 100 },
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 
+	boss1head = gore.loadSpriteList({ "boss1.png" }, { 200 }, {200}, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+
 	texp playertex = gore.loadTextureList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 	spxp playersprites = gore.loadSpriteList({ "player1.png", "player2.png" }, { 20, 20 }, { 25, 25 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 
@@ -485,7 +490,7 @@ int main() {
 	SDL_Texture* pbullet = SDL_CreateTextureFromSurface(rend, pbsurf);
 	SDL_FreeSurface(pbsurf);
 	SDL_Surface* ebullet1 = gore.loadPNG("Sprites/e1bullet.png", SDL_PIXELFORMAT_RGBA8888, 10, 10);
-	SDL_Texture* ebullet1tex = SDL_CreateTextureFromSurface(rend, ebullet1);
+	ebullet1tex = SDL_CreateTextureFromSurface(rend, ebullet1);
 	SDL_FreeSurface(ebullet1);
 
 	//blood texture generation
@@ -521,6 +526,7 @@ int main() {
 	Mix_Chunk* grazesound = Mix_LoadWAV("Sprites/graze.wav");
 	Mix_Chunk* ehitsound = Mix_LoadWAV("Sprites/ehit.wav");
 	Mix_Chunk* edeathsound = Mix_LoadWAV("Sprites/edeath.wav");
+	Mix_Chunk* phitsound = Mix_LoadWAV("Sprites/pdamage.wav");
 
 	Entity player = { 400, 400, 5, 5 };
 	player.health = 50;
@@ -564,6 +570,7 @@ int main() {
 	double ctime = 0;
 	double lvltime = 0;
 	game.loadBoss(&boss, level, rend);
+	//bossmode = true;
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -1055,6 +1062,9 @@ int main() {
 				i++;
 			}
 		}
+		if (bossmode) {
+			game.bossUpdate(&boss, rend, delta, bullets, &player);
+		}
 		cgr = false;
 		for (int i = 0; i < bullets.size();) {
 			bullets[i].trajtimer += delta;
@@ -1072,6 +1082,7 @@ int main() {
 					if (game.isColliding(bullets[i], player)) {
 						player.health--;
 						bullets[i].x = -30;
+						Mix_PlayChannel(3, phitsound, 0);
 					}
 					else {
 						cgr = true;
@@ -1087,6 +1098,23 @@ int main() {
 					skip = true;
 				}
 				if (!skip) {
+					if (game.isColliding(bullets[i], boss)) {
+						int cx = 0;
+						int cy = 0;
+						if (bullets[i].x > boss.x) { cx = bullets[i].x - boss.x; }
+						else { cx = boss.x - bullets[i].x; }
+						if (bullets[i].y > boss.y) { cy = bullets[i].y - boss.y; }
+						else { cy = boss.y - bullets[i].y; }
+						if (gore.GetPixelTexture(boss.tex, &cy, &cx, &boss.surf->pitch) != 0) {
+							if (!boss.points[cy][cx]) {
+								boss.points[cy][cx] = true;
+								boss.destroyed.push_back({ cx, cy });
+								Mix_PlayChannel(0, ehitsound, 0);
+								score += 2;
+								bullets[i].x = -30;
+							}
+						}
+					}
 					for (auto& j : enemies) {
 						if (game.isColliding(bullets[i], j)) {
 							int cx = 0;

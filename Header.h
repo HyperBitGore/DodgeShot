@@ -15,6 +15,10 @@ extern texp enem2tex;
 extern spxp enem3head;
 extern texp enem3tex;
 
+extern spxp boss1head;
+
+extern SDL_Texture* ebullet1tex;
+
 class Timer {
 private:
 	std::chrono::time_point<std::chrono::steady_clock> start;
@@ -71,6 +75,7 @@ struct Enemy : Entity {
 	SDL_Texture* tex;
 	bool change;
 	std::vector<Point> destroycheck;
+	std::vector<Point> destroyed;
 	int destn;
 	float trajx;
 	float trajy;
@@ -84,13 +89,33 @@ struct Enemy : Entity {
 	int pmax;
 	float burstspeed;
 	float origshotspeed;
+	int pattern;
 };
 struct Particle : Bullet {
 	SDL_Rect pd;
 	SDL_Rect rect;
 	SDL_Texture* tex;
-	//Uint32 col;
+	Uint32 col;
 	bool er;
+};
+struct Boss : Entity {
+	int type;
+	int pattern;
+	int phase;
+	int burst;
+	float trajx;
+	float trajy;
+	float movetime;
+	float maxmove;
+	float shtime;
+	float shmax;
+	float antime;
+	float anmax;
+	SDL_Surface* surf;
+	SDL_Texture* tex;
+	spxp sprites;
+	std::vector<Point> destroyed;
+	std::vector<std::vector<bool>> points;
 };
 
 struct Transform {
@@ -139,7 +164,13 @@ public:
 
 	void convertToLvl(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
 	void loadLevel(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Transform>& transforms, const char* file);
-	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool* spawning);
-	void MassTextureSet(SDL_Texture* tex, SDL_Surface* surf, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
+	void levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool* spawning, bool* bossmode);
+	void MassTextureSet(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
+	bool MassTextureCheck(SDL_Texture* tex, int sy, int sx, int endx, int endy, Uint32* pixel, int* pitch);
+	void MassTextureSet(SDL_Texture* tex, std::vector<Point> points, std::vector<Uint32>colors, int* pitch);
+
+	void loadBoss(Boss* boss, int level, SDL_Renderer* rend);
+	void bossUpdate(Boss* boss, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p);
+
 };
 
