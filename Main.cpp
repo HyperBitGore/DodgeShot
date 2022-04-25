@@ -21,6 +21,8 @@ spxp enem2head;
 texp enem2tex;
 spxp enem3head;
 texp enem3tex;
+spxp enem4head;
+texp enem4tex;
 
 spxp boss1head;
 
@@ -30,6 +32,7 @@ SDL_Texture* ebullet1tex;
 std::vector<std::vector<bool>> e1points;
 std::vector<std::vector<bool>> e2points;
 std::vector<std::vector<bool>> e3points;
+std::vector<std::vector<bool>> e4points;
 
 Uint32 wallcolor;
 SDL_Texture* walls;
@@ -40,16 +43,16 @@ Timer trantime;
 Timer gaptime;
 
 
-//music
-//one more enemy for endless mode
+
+
 //For having enemies with different angles just make new enemy type for loading and on load just change them to one useable
 //https://www.pinpng.com/picture/hhmbowh_bullet-hell-sprite-sheet-hd-png-download/, good reference for bullet sprites
 
 
 //Dont use 92 or 124
 std::vector<int> etypes = {};
-std::vector<int> nload = { };
-std::vector<Point> spawnloc = { };
+std::vector<int> nload = {};
+std::vector<Point> spawnloc = {};
 std::vector<Transform> transforms;
 
 int main() {
@@ -74,23 +77,9 @@ int main() {
 	texp text16 = NULL;
 	game.constructAlphabet(rend, font16, { 198, 150, 40 }, text16);
 	Uint32 black = gore.ConvertColorToUint32({ 0, 0, 0, 0 }, surf->format);
-	wallcolor = gore.ConvertColorToUint32({ 85, 200, 150, 0 }, surf->format);
+	wallcolor = gore.ConvertColorToUint32({ 235, 100, 175, 0 }, surf->format);
 
-	//std::vector<Transform> transforms;
-	/*Transform trans;
-	trans.activate = 8000;
-	trans.sx = 10;
-	trans.sy = 400;
-	trans.speed = 0.04;
-	trans.endx = 790;
-	trans.endy = 400;
-	trans.cx = 10;
-	trans.cy = 400;
-	trans.ct = 0;
-	trans.col = wallcolor;
-	transforms.push_back(trans);*/
-
-
+	
 	std::cout << spawnloc.size() << " : " << etypes.size() << std::endl;
 	std::cout << nload.size() << std::endl;
 	//game.convertToLvl(etypes, nload, spawnloc, transforms, "level.lvl");
@@ -107,6 +96,10 @@ int main() {
 	enem3head = gore.loadSpriteList({ "enem3_2.png", "enem3_1.png" }, { 100, 100, 100 }, { 100, 100, 100 },
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 	enem3tex = gore.loadTextureList({ "enem3_2.png", "enem3_1.png" }, { 100, 100, 100 }, { 100, 100, 100 },
+		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+	enem4head = gore.loadSpriteList({ "enem4.png", "enem4_1.png" }, { 50, 50 }, { 50 , 50 },
+		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
+	enem4tex = gore.loadTextureList({ "enem4.png", "enem4_1.png"}, {50, 50 }, {50, 50 },
 		SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
 
 	boss1head = gore.loadSpriteList({ "boss1.png" }, { 200 }, { 200 }, SDL_PIXELFORMAT_RGBA8888, rend, "Sprites/");
@@ -181,6 +174,7 @@ int main() {
 	Mix_Chunk* pdeathsound = Mix_LoadWAV("Sprites/pdeath.wav");
 	Mix_Chunk* pickupsound = Mix_LoadWAV("Sprites/pickup.wav");
 	Mix_Chunk* shootsound = Mix_LoadWAV("Sprites/shoot.wav");
+	Mix_Music* mus = Mix_LoadMUS("Sprites/dodge.wav");
 
 	int lives = 5;
 	int backframes = 0;
@@ -236,6 +230,8 @@ int main() {
 	bossmode = false;
 	std::vector<Point> transpoints;
 	std::vector<Uint32> transcolors;
+	Mix_VolumeMusic(25);
+	Mix_PlayMusic(mus, -1);
 	while (!exitf) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -643,6 +639,24 @@ int main() {
 							enemies[i].pburst = 0;
 						}
 						break;
+					case 3:
+						angle = std::atan2f((player.y - 5) - enemies[i].y, (player.x - 6) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + 10 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 4) - enemies[i].y, (player.x - 5) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + 20 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 3) - enemies[i].y, (player.x - 4) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + 30 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y - 2) - enemies[i].y, (player.x - 3) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x - 10 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y + 5) - enemies[i].y, (player.x + 6) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x - 20 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y + 4) - enemies[i].y, (player.x + 5) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x - 30 + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y + 3) - enemies[i].y, (player.x + 4) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						angle = std::atan2f((player.y + 2) - enemies[i].y, (player.x + 3) - enemies[i].x) * 180.0 / M_PI;
+						bullets.push_back(game.createBullet(enemies[i].x + (enemies[i].w >> 1), enemies[i].y + (enemies[i].h >> 1), 10, 10, angle, 0.0035, 0, ebullet1tex));
+						break;
 					}
 					enemies[i].shootimer = 0;
 				}
@@ -811,7 +825,7 @@ int main() {
 								player.health--;
 							}
 							bullets[i].x = -30;
-							Mix_PlayChannel(3, phitsound, 0);
+							Mix_PlayChannel(-1, phitsound, 0);
 						}
 						else {
 							cgr = true;
@@ -912,7 +926,7 @@ int main() {
 			}
 			if (player.health <= 0) {
 				player.health = 3;
-				Mix_PlayChannel(3, pdeathsound, 0);
+				Mix_PlayChannel(-1, pdeathsound, 0);
 				if (hardcore) {
 					player.health = 1;
 				}

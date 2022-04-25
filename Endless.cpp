@@ -12,14 +12,17 @@ void Game::endlessPopulate(std::vector<Enemy>& enemies, SDL_Renderer* rend) {
 		texp tp = NULL;
 		int roll = rand() % 100 + 1;
 		int type = 0;
-		if (roll > 70) {
+		if (roll > 60) {
 			type = rand() % 2;
 		}
-		else if (roll > 98) {
+		else if (roll > 20) {
 			type = rand() % 3;
 		}
 		else {
 			type = 0;
+		}
+		if (type == 2) {
+			type = 3;
 		}
 		switch (type) {
 		case 0:
@@ -34,10 +37,14 @@ void Game::endlessPopulate(std::vector<Enemy>& enemies, SDL_Renderer* rend) {
 			sp = enem3head;
 			tp = enem3tex;
 			break;
+		case 3:
+			sp = enem4head;
+			tp = enem4tex;
+			break;
 		}
 		int sx = rand() % 780;
 		int sy = -10;
-		createEnemy(sp, tp, enemies, sx, sy, type, 90, rend);
+		createEnemy(sp, tp, enemies, sx, 21, type, 90, rend);
 	}
 	//transform populating
 	if (endlesspopcount >= 10) {

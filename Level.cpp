@@ -298,5 +298,12 @@ void Game::createEnemyPoints() {
 		}
 		e3points.push_back(c);
 	}
-
+	//e4
+	for (int i = 0; i < 50; i++) {
+		std::vector<bool> c;
+		for (int j = 0; j < 50; j++) {
+			c.push_back(false);
+		}
+		e4points.push_back(c);
+	}
 }

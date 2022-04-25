@@ -15,6 +15,8 @@ extern spxp enem2head;
 extern texp enem2tex;
 extern spxp enem3head;
 extern texp enem3tex;
+extern spxp enem4head;
+extern texp enem4tex;
 
 extern spxp boss1head;
 
@@ -23,6 +25,7 @@ extern SDL_Texture* ebullet1tex;
 extern std::vector<std::vector<bool>> e1points;
 extern std::vector<std::vector<bool>> e2points;
 extern std::vector<std::vector<bool>> e3points;
+extern std::vector<std::vector<bool>> e4points;
 
 extern Uint32 wallcolor;
 extern SDL_Texture* walls;

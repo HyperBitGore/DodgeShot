@@ -32,6 +32,19 @@ void Game::createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemie
 		temp.offscreen = 2;
 	}
 	switch (type) {
+	case 3:
+		temp.pause = false;
+		temp.health = 10;
+		temp.shootmax = 1.5;
+		temp.timermax = 0.02;
+		temp.animmax = 0.1;
+		//temp.destroycheck = { {13, 30}, {14, 30}, {15, 30}, {16, 30}, {13, 31}, {14, 31}, {15, 31}, {16, 31}, {14, 32}, {15, 32} };
+		generateDestroyChecks(temp.destroycheck, 21, 18, 28, 21);
+		temp.destn = temp.destroycheck.size();
+		temp.w = 50;
+		temp.h = 50;
+		temp.points = e4points;
+		break;
 	case 2:
 		temp.pause = false;
 		temp.health = 10;
