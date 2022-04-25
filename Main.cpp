@@ -7,6 +7,14 @@ int score = 0;
 int curnload = 0;
 int curetype = 0;
 int prog = 0;
+bool endlessmode = false;
+int endlesspopcount;
+int vertinc;
+int horinc;
+int vertstarts[2];
+int horizontalstarts[2];
+double popgap;
+
 spxp enem1head;
 texp enem1tex;
 spxp enem2head;
@@ -31,18 +39,9 @@ Timer etime;
 Timer trantime;
 Timer gaptime;
 
-//Optimize particles
-//Invis time when you lose a life
-//Endless mode with box that slowly gets smaller
-//3 levels(3 bosses) like classic STG shmups
-//Enemy that grows pixels back
-//Enemy that moves back and forth top of screen
-//Enemy that strafes you and tries to dodge bullets(could break this up into two different)
-//Bosses; Body parts of giant monster you're in; Confined - confined in giant monsters body cause it swallowed you
-//Second: A guy that moves around outer edge of screen, like a centipede kind've
-//Third: Small guy like you and dodges your attacks and sounds out hard to dodge patterns or tracking ones
 
-
+//music
+//one more enemy for endless mode
 //For having enemies with different angles just make new enemy type for loading and on load just change them to one useable
 //https://www.pinpng.com/picture/hhmbowh_bullet-hell-sprite-sheet-hd-png-download/, good reference for bullet sprites
 
@@ -210,6 +209,7 @@ int main() {
 	double spawntimer = 0;
 	double panimetime = 0;
 	double banim = 0;
+	double invistime = 0;
 
 	bool run = false;
 	bool cgr = false;
@@ -219,7 +219,7 @@ int main() {
 	bool win = false;
 	bool menu = true;
 	bool backanim = false;
-
+	bool invis = false;
 	//int framespawn = 0;
 	//int spawngap = 500;
 
@@ -256,18 +256,34 @@ int main() {
 			if (spawning) {
 				double dv = gaptime.getTime();
 				if (dv >= 200) {
-					game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
+					if (!endlessmode) {
+						game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
+					}
+					else {
+						
+					}
 					gaptime.resetTime();
 				}
 			}
 			else {
 				ctime = etime.getTime();
 			}
-
-			if (ctime > 2000) {
-				spawning = true;
+			if (invis) {
+				invistime += delta;
+				if (invistime > 0.8) {
+					invis = false;
+					invistime = 0;
+				}
+			}
+			if (ctime > popgap) {
 				//spawngap = fps / 2;
-				game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
+				if (!endlessmode) {
+					spawning = true;
+					game.levelHandler(etypes, nload, spawnloc, enemies, rend, &spawning, &bossmode);
+				}
+				else {
+					game.endlessPopulate(enemies, rend);
+				}
 				etime.resetTime();
 				ctime = 0;
 			}
@@ -467,7 +483,6 @@ int main() {
 						}
 					}
 				}
-
 				//Instead of making new texture grab pixel data from the enemies texture
 				SDL_RenderCopy(rend, particles[i].tex, &particles[i].pd, &particles[i].rect);
 				if (particles[i].er) {
@@ -715,6 +730,7 @@ int main() {
 							break;
 						}
 						//explosion particle creation
+						n = 0;
 						for (int h = 0; h < enemies[i].h; h++) {
 							for (int w = 0; w < enemies[i].w; w++) {
 								if (!enemies[i].points[h][w]) {
@@ -724,9 +740,8 @@ int main() {
 									p.rect = { (int)p.x, (int)p.y, 1, 1 };
 									p.pd = { w, h, 1, 1 };
 									p.trajtimer = 0;
-									p.timermax = 0.007;
+									p.timermax = 0.004;
 									p.tex = enemies[i].texs->current;
-									p.col = gore.GetPixelSurface(enemies[i].sprites->current, &h, &w);
 									p.trajx = game.trajX(rand() % 358);
 									p.trajy = game.trajY(rand() % 358);
 									p.type = 0;
@@ -792,7 +807,9 @@ int main() {
 				case 0:
 					if (game.isColliding(bullets[i], graze)) {
 						if (game.isColliding(bullets[i], player)) {
-							player.health--;
+							if (!invis) {
+								player.health--;
+							}
 							bullets[i].x = -30;
 							Mix_PlayChannel(3, phitsound, 0);
 						}
@@ -901,6 +918,7 @@ int main() {
 				}
 				//Do animation of player going back old spot
 				lives--;
+				invis = true;
 				if (lives < 0) {
 					menu = true;
 					game.death(&player, &boss, &lives, &hardcore, &bossmode, enemies, bullets, particles, rend);
@@ -935,7 +953,7 @@ int main() {
 
 		gore.drawText(rend, text16, "Play Normal", 300, 250, 16, 16);
 		gore.drawText(rend, text16, "Play Hardcore", 300, 300, 16, 16);
-		gore.drawText(rend, text16, "Options", 300, 350, 16, 16);
+		gore.drawText(rend, text16, "Endless Mode", 300, 350, 16, 16);
 		gore.drawText(rend, text16, "Exit", 300, 400, 16, 16);
 		}
 		SDL_RenderPresent(rend);

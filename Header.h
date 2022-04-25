@@ -28,6 +28,13 @@ extern Uint32 wallcolor;
 extern SDL_Texture* walls;
 extern int wallpitch;
 extern int score;
+extern bool endlessmode;
+extern int endlesspopcount;
+extern int vertinc;
+extern int horinc;
+extern int vertstarts[2];
+extern int horizontalstarts[2];
+extern double popgap;
 
 class Timer {
 private:
@@ -114,7 +121,6 @@ struct Particle : Bullet {
 	SDL_Rect pd;
 	SDL_Rect rect;
 	SDL_Texture* tex;
-	Uint32 col;
 	bool er;
 };
 
@@ -210,5 +216,7 @@ public:
 	void updatePauseButtons(std::vector<Button>& buttons, bool* menu);
 	void createButtons(std::vector<Button>& menubs, std::vector<Button>& pbuttons);
 	void death(Entity* player, Boss* boss, int* lives, bool* hardcore, bool* bossmode, std::vector<Enemy>& enemies, std::vector<Bullet>& bullets, std::vector<Particle>& particles, SDL_Renderer* rend);
+
+	void endlessPopulate(std::vector<Enemy>& enemies, SDL_Renderer* rend);
 };
 

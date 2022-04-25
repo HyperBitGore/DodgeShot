@@ -76,6 +76,7 @@ void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::
 		*spawning = false;
 	}
 	else {
+		enemies.clear();
 		*spawning = false;
 		*bossmode = true;
 	}
