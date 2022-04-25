@@ -1,7 +1,7 @@
 #include "Header.h"
 
 
-void Game::bossUpdate(Boss* b, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p, std::vector<Transform>& transforms) {
+void Game::bossUpdate(Boss* b, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p, std::vector<Transform>& transforms, bool* bossmode, bool* win, bool* menu) {
 	Gore gore;
 	b->shtime += delta;
 	b->movetime += delta;
@@ -154,7 +154,7 @@ void Game::bossUpdate(Boss* b, SDL_Renderer* rend, double delta, std::vector<Bul
 					b->pattern = 2;
 					b->shmax = 0.8;
 				}
-				else if (b->burst == 7) {
+				else if (b->burst >= 7) {
 					b->pattern = 0;
 					b->shmax = 0.5;
 					b->burst = 0;
@@ -170,7 +170,7 @@ void Game::bossUpdate(Boss* b, SDL_Renderer* rend, double delta, std::vector<Bul
 					b->pattern = 4;
 					b->shmax = 0.6;
 				}
-				else if (b->burst == 6) {
+				else if (b->burst >= 6) {
 					b->pattern = 3;
 					b->shmax = 0.4;
 					b->burst = 0;
@@ -330,6 +330,11 @@ void Game::bossUpdate(Boss* b, SDL_Renderer* rend, double delta, std::vector<Bul
 	}
 	SDL_Rect rect = { b->x, b->y, b->w, b->h };
 	SDL_RenderCopy(rend, b->tex, NULL, &rect);
+	if (b->health <= 0) {
+		*win = true;
+		*menu = true;
+		*bossmode = false;
+	}
 }
 
 void Game::loadBoss(Boss* boss, int level, SDL_Renderer* rend) {
@@ -489,6 +494,7 @@ void Game::loadBoss(Boss* boss, int level, SDL_Renderer* rend) {
 	SDL_SetTextureBlendMode(boss->tex, SDL_BLENDMODE_BLEND);
 	std::vector<Point> points;
 	std::vector<Uint32> colors;
+	boss->points.clear();
 	for (int i = 0; i < boss->h; i++) {
 		std::vector<bool> c;
 		for (int j = 0; j < boss->w; j++) {

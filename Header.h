@@ -8,6 +8,7 @@
 extern int curnload;
 extern int curetype;
 extern int prog;
+extern int level;
 extern spxp enem1head;
 extern texp enem1tex;
 extern spxp enem2head;
@@ -24,6 +25,9 @@ extern std::vector<std::vector<bool>> e2points;
 extern std::vector<std::vector<bool>> e3points;
 
 extern Uint32 wallcolor;
+extern SDL_Texture* walls;
+extern int wallpitch;
+extern int score;
 
 class Timer {
 private:
@@ -43,17 +47,26 @@ public:
 	}
 };
 
+extern Timer etime;
+extern Timer trantime;
+extern Timer gaptime;
+
 struct Point {
 	int x;
 	int y;
 };
-
+extern std::vector<int> etypes;
+extern std::vector<int> nload;
+extern std::vector<Point> spawnloc;
 struct Entity {
 	float x;
 	float y;
 	int w;
 	int h;
 	int health;
+};
+struct Button : Entity {
+	int type;
 };
 struct Bullet : Entity {
 	float trajx;
@@ -117,6 +130,7 @@ struct Transform {
 	float ct;
 	Uint32 col;
 };
+extern std::vector<Transform> transforms;
 //Erase when used, or else will continually activate
 struct TRActivate {
 	Transform trans;
@@ -174,7 +188,7 @@ public:
 	}
 
 	SDL_Texture* loadBackground(int level, SDL_Renderer* rend);
-	void updateBackground(SDL_Renderer* rend, SDL_Texture* ctex, Entity* back, double delta);
+	void updateBackground(SDL_Renderer* rend, SDL_Texture* tex, Entity* back, double delta);
 	
 	void generateDestroyChecks(std::vector<Point>& dest, int sx, int sy, int endx, int endy);
 	void createEnemy(spxp& enemhead, texp& enemtex, std::vector<Enemy>& enemies, int x, int y, int type, float degree, SDL_Renderer* rend);
@@ -190,7 +204,11 @@ public:
 
 	void regrow(std::vector<Point> points, SDL_Texture* tex, SDL_Surface* surf, std::vector<std::vector<bool>>& dest);
 	void loadBoss(Boss* boss, int level, SDL_Renderer* rend);
-	void bossUpdate(Boss* boss, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p, std::vector<Transform>& transforms);
+	void bossUpdate(Boss* boss, SDL_Renderer* rend, double delta, std::vector<Bullet>& bullets, Entity* p, std::vector<Transform>& transforms, bool* bossmode, bool* win, bool* menu);
 
+	void updateMenuButtons(std::vector<Button>& buttons, std::vector<Enemy>& enemies, std::vector<Bullet>& bullets, std::vector<Particle>& particles, SDL_Renderer* rend, bool* menu, bool* exitf, Entity* player, Boss* boss, int* lives, bool* hardcore, bool* bossmode);
+	void updatePauseButtons(std::vector<Button>& buttons, bool* menu);
+	void createButtons(std::vector<Button>& menubs, std::vector<Button>& pbuttons);
+	void death(Entity* player, Boss* boss, int* lives, bool* hardcore, bool* bossmode, std::vector<Enemy>& enemies, std::vector<Bullet>& bullets, std::vector<Particle>& particles, SDL_Renderer* rend);
 };
 

@@ -38,8 +38,9 @@ bool Game::MassTextureCheck(SDL_Texture* tex, int sy, int sx, int endx, int endy
 }
 
 void Game::levelHandler(std::vector<int>& etypes, std::vector<int>& nload, std::vector<Point>& spawnloc, std::vector<Enemy>& enemies, SDL_Renderer* rend, bool *spawning, bool* bossmode) {
-	if (curnload <= nload.size() - 1 && !bossmode) {
+	if (curnload <= nload.size() - 1 && !*bossmode) {
 		bool oneframe = false;
+		*bossmode = false;
 		for (int i = prog; i < nload[curnload]; i++, curetype++, oneframe = true) {
 			if (oneframe) {
 				prog = i;
